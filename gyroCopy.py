@@ -32,6 +32,10 @@ def get_x_rotation(x,y,z):
     radians = math.atan2(y,dist(x,z))
     return math.degrees(radians)
 
+def get_z_rotation(x,y,z):
+    radians = math.atan2(z, dist(x,y))
+    return math.degrees(radians)
+
 bus = smbus.SMBus(1)
 address = 0x68
 
@@ -67,5 +71,6 @@ while (True):
 
     print "X Rotation: ", get_x_rotation(beschleunigung_xout_ska,beschleunigung_yout_ska,beschleunigung_zout_ska)
     print "Y Rotation: ",get_y_rotation(beschleunigung_xout_ska,beschleunigung_yout_ska,beschleunigung_zout_ska)
+    print "Z Rotation: ", get_z_rotation(beschleunigung_xout_ska, beschleunigung_yout_ska, beschleunigung_zout_ska)
 
     time.sleep(1)
