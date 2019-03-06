@@ -27,6 +27,9 @@ bus = smbus.SMBus(1) # bus = smbus.SMBus(0) fuer Revision 1
 address = 0x68       # via i2cdetect
 
 f = open('record.txt','w')
+f1 = open('time.txt','w')
+
+t = 0
 
 # Aktivieren, um das Modul ansprechen zu koennen
 bus.write_byte_data(address, power_mgmt_1, 0)
@@ -58,7 +61,12 @@ while True:
 
         s = str(beschleunigung_yout_skaliert)
         f.write(s)
-        f.write('\n')
+        f.write(' ')
+        
+        t = t+time_interval
+        t1 = str(t)
+        f1.write(t1)
+        f1.write(' ')
         
     start = end
 
