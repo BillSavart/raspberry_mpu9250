@@ -59,14 +59,14 @@ while True:
         print "beschleunigung_yout: ", beschleunigung_yout_skaliert
         print "speed: ", speed
 
-        s = str(beschleunigung_yout_skaliert)
-        f.write(s)
-        f.write(' ')
+    s = str(beschleunigung_yout_skaliert)
+    f.write(s)
+    f.write(' ')
         
-        t = t+time_interval
-        t1 = str(t)
-        f1.write(t1)
-        f1.write(' ')
+    t = t+time_interval
+    t1 = str(t)
+    f1.write(t1)
+    f1.write(' ')
         
     start = end
 
