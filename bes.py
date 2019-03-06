@@ -25,7 +25,9 @@ def read_word_2c(reg):
 
 bus = smbus.SMBus(1) # bus = smbus.SMBus(0) fuer Revision 1
 address = 0x68       # via i2cdetect
- 
+
+f = open('record.txt','w')
+
 # Aktivieren, um das Modul ansprechen zu koennen
 bus.write_byte_data(address, power_mgmt_1, 0)
 
@@ -53,6 +55,10 @@ while True:
         speed = speed + (time_interval * beschleunigung_yout_skaliert)
         print "beschleunigung_yout: ", beschleunigung_yout_skaliert
         print "speed: ", speed
+
+        s = str(beschleunigung_yout_skaliert)
+        f.write(s)
+        f.write('\n')
         
     start = end
 
