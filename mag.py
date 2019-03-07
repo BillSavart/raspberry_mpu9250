@@ -24,8 +24,12 @@ def read_word_2c(reg):
         return val
 
 bus = smbus.SMBus(1) # bus = smbus.SMBus(0) fuer Revision 1
-address = 0x68       # via i2cdetect
-mag_address = 0x0c
+address = 0x68
+bus.write_byte_data(address, power_mgmt_1, 0)
+bus.write_byte_data(address, 0x37, 0x02)
+
+address = 0x0c       # via i2cdetect
+bus.write_byte_data(address, 0x0A, 0b0110)
 
 #f = open('record.txt','w')
 #f1 = open('time.txt','w')
@@ -33,7 +37,7 @@ mag_address = 0x0c
 t = 0
 
 # Aktivieren, um das Modul ansprechen zu koennen
-bus.write_byte_data(address, power_mgmt_1, 0)
+#bus.write_byte_data(address, power_mgmt_1, 0) 
 
 speed = 0
 start = 0
