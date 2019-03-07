@@ -31,59 +31,50 @@ bus.write_byte_data(address, 0x37, 0x02)
 address = 0x0c       # via i2cdetect
 bus.write_byte_data(address, 0x0A, 0b0110)
 
-#f = open('record.txt','w')
-#f1 = open('time.txt','w')
+f = open('make_record.txt','w')
+f1 = open('make_time.txt','w')
 
 t = 0
 
 # Aktivieren, um das Modul ansprechen zu koennen
 #bus.write_byte_data(address, power_mgmt_1, 0) 
 
-speed = 0
 start = 0
+end = 0
+prev = 0
+now = 0
 
 while True:
-    beschleunigung_xout = read_word_2c(0x3b)
-    beschleunigung_yout = read_word_2c(0x3d)
-    beschleunigung_zout = read_word_2c(0x3f)
-    
     mag_xout = read_word_2c(0x04)
     mag_yout = read_word_2c(0x06)
     mag_zout = read_word_2c(0x08)
 
-    print mag_xout
-    print mag_yout
-    print mag_zout
-    print
-
-    beschleunigung_xout_skaliert = beschleunigung_xout / 16384.0
-    beschleunigung_yout_skaliert = beschleunigung_yout / 16384.0 * 9.8
-    beschleunigung_zout_skaliert = beschleunigung_zout / 16384.0
-
-    if start == 0:
+    if prev == 0:
+        prev = mag_yout
         start = time.time()
-
-    end = time.time()    
-    time_interval = end - start
-
-    if beschleunigung_yout_skaliert < 1 and beschleunigung_yout_skaliert > -1:
-        pass
-    else:
-        speed = speed + (time_interval * beschleunigung_yout_skaliert)
-        #print "beschleunigung_yout: ", beschleunigung_yout_skaliert
-        #print "speed: ", speed
-
-    s = str(beschleunigung_yout_skaliert)
-    #f.write(s)
-    #f.write(' ')
-        
-    t = t+time_interval
-    #t1 = str(t)
-    #f1.write(t1)
-    #f1.write(' ')
-        
+    end = time.time()
+    now = mag_yout
+    
+    print prev
+    print now
+#    if prev-now <= 10 and prev-now >= -10:
+   #     print "prev: ", prev
+    #    print "now: ", now
+ #       print "no move"
+      #  pass
+ #   else:
+ #       print "Move\n"
+ #       prev = now
+    
+    time_inter = end-start
+    s1 = str(time_inter)
+    f1.write(s1)
+    s = str(prev-now)
+    f.write(s)
+    
+    prev = now
     start = end
 
-    #print "beschleunigung_xout: ", ("%6d" % beschleunigung_xout), " skaliert: ", beschleunigung_xout_skaliert
-
-    time.sleep(1)
+    #print mag_xout
+    #print mag_yout
+    #print mag_zout
