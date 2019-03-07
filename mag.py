@@ -67,7 +67,8 @@ while True:
  #       prev = now
     
     time_inter = end-start
-    s1 = str(time_inter)
+    t += time_inter
+    s1 = str(t)
     f1.write(s1)
     f1.write(' ')
     s = str(prev-now)
