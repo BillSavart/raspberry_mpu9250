@@ -71,12 +71,12 @@ while True:
     s1 = str(t)
     f1.write(s1)
     f1.write(' ')
-    s = str(prev-now)
+    s = str(now)
     f.write(s)
     f.write(' ')
 
-    i=100000
-    j=100000
+    i=300000
+    j=300000
     while(i!=0):
         while(j!=0):
             j=j-1
