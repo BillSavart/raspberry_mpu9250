@@ -71,7 +71,7 @@ while True:
     s1 = str(t)
     f1.write(s1)
     f1.write(' ')
-    s = str(now)
+    s = str(prev-now)
     f.write(s)
     f.write(' ')
 
