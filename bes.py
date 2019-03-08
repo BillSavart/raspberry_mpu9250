@@ -31,16 +31,17 @@ bus.write_byte_data(address, 0x37, 0x02) #initiate bypass
 mag_address = 0x0c
 bus.write_byte_data(mag_address, 0x0A, 0b0110) #initiate AKB8963
 
-record_f = open('record.txt','w')  #the data of bes
-time_f = open('time.txt','w') #the data of bes time
-mag_record_f = open('mag_record.txt', 'w') #the data of mag
-mag_time_f = open('mag_time.txt', 'w') #the data of mag time
+#record_f = open('record.txt','w')  #the data of bes
+#time_f = open('time.txt','w') #the data of bes time
+#mag_record_f = open('mag_record.txt', 'w') #the data of mag
+#mag_time_f = open('mag_time.txt', 'w') #the data of mag time
 
 t = 0
 
 # Aktivieren, um das Modul ansprechen zu koennen
 bus.write_byte_data(address, power_mgmt_1, 0)
 
+distance = 0
 speed = 0
 start = 0 #bes time
 prev = 0 #mag data
@@ -71,25 +72,29 @@ while True:
         now = mag_yout
         #count if stop
         if prev - now > -5 and prev - now < 5:
-           pass  #   print "no move"
+              #print "no move"
+            distance = 0
+            speed = 0
         else:
-            print "move"
+            print "distance: ",distance
+            distance = 0
             #the bes value is valid
         prev = now
 
     if beschleunigung_yout_skaliert < 1 and beschleunigung_yout_skaliert > -1:
         pass
     else:
+        distance  = distance + speed*time_interval + 0.5*beschleunigung_yout_skaliert*time_interval*time_interval
         speed = speed + (time_interval * beschleunigung_yout_skaliert)
-        print "beschleunigung_yout: ", beschleunigung_yout_skaliert
-        print "speed: ", speed
+        #print "beschleunigung_yout: ", beschleunigung_yout_skaliert
+        #print "speed: ", speed
 
-    s = str(beschleunigung_yout_skaliert)
+    #s = str(beschleunigung_yout_skaliert)
     #record_f.write(s)
     #record_f.write(' ')
         
-    t = t + time_interval
-    t1 = str(t)
+    #t = t + time_interval
+    #t1 = str(t)
     #time_f.write(t1)
     #time_f.write(' ')
         
