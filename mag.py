@@ -75,7 +75,6 @@ while True:
     f.write(s)
     f.write(' ')
 
-    test = time.time()
     i=300000
     j=300000
     while(i!=0):
@@ -83,11 +82,5 @@ while True:
             j=j-1
         i=i-1
 
-    test2 = time.time()
-    print test2 - test
     prev = now
     start = end
-
-    #print mag_xout
-    #print mag_yout
-    #print mag_zout
