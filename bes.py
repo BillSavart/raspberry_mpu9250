@@ -23,6 +23,7 @@ def read_word_2c(reg, addr):
     else:
         return val
 
+# 1:320
 bus = smbus.SMBus(1) # bus = smbus.SMBus(0) fuer Revision 1
 address = 0x68       # via i2cdetect
 bus.write_byte_data(address, power_mgmt_1, 0)  #initiate mpu6500
@@ -39,7 +40,7 @@ bus.write_byte_data(mag_address, 0x0A, 0b0110) #initiate AKB8963
 t = 0
 
 # Aktivieren, um das Modul ansprechen zu koennen
-bus.write_byte_data(address, power_mgmt_1, 0)
+#bus.write_byte_data(address, power_mgmt_1, 0)
 
 distance = 0
 speed = 0
@@ -72,7 +73,7 @@ while True:
         now = mag_yout
         #count if stop
         if prev - now > -5 and prev - now < 5:
-              #print "no move"
+            #print "no move"
             distance = 0
             speed = 0
         else:
@@ -85,8 +86,8 @@ while True:
     else:
         distance  = distance + speed*time_interval + 0.5*beschleunigung_yout_skaliert*time_interval*time_interval
         speed = speed + (time_interval * beschleunigung_yout_skaliert)
-        print "distance: ", distance
-        #print "beschleunigung_yout: ", beschleunigung_yout_skaliert
+        #print "distance: ", distance
+        print "beschleunigung_yout: ", beschleunigung_yout_skaliert
         #print "speed: ", speed
 
     #s = str(beschleunigung_yout_skaliert)
