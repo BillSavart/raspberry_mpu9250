@@ -77,7 +77,8 @@ while True:
             distance = 0
             speed = 0
         else:
-            distance = 0
+            print "distance:",distance
+            #distance = 0
             #the bes value is valid
         prev = now
 
@@ -87,7 +88,7 @@ while True:
         distance  = distance + speed*time_interval + 0.5*beschleunigung_yout_skaliert*time_interval*time_interval
         speed = speed + (time_interval * beschleunigung_yout_skaliert)
         #print "distance: ", distance
-        print "beschleunigung_yout: ", beschleunigung_yout_skaliert
+        #print "beschleunigung_yout: ", beschleunigung_yout_skaliert
         #print "speed: ", speed
 
     #s = str(beschleunigung_yout_skaliert)
