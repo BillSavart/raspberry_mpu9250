@@ -75,9 +75,13 @@ while i <= 10000:
     start = end
     i = i + 1
 
-y = signal.medfilt(bes_arr,99)
-#z = signal.lfilter(b,a,y)
+y = signal.medfilt(bes_arr,3)
+i = 0
+while i<1000: 
+    y = signal.medfilt(y,3)
+    i = i + 1
 
+i = 0
 for i in y:
     c = str(i)
     lfilter_record_f.write(c)
