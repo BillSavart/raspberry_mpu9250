@@ -38,7 +38,7 @@ time_f = open('time.txt','w') #the data of bes time
 lfilter_record_f = open('lfilter_record.txt', 'w') #the data of mag
 
 order = 3
-Wn = 0.15
+Wn = 0.05
 b,a = signal.butter(order,Wn,'low')
 
 i = 0
@@ -75,11 +75,10 @@ while i <= 10000:
     start = end
     i = i + 1
 
-#y = signal.medfilt(b,a,bes_arr)
-#z = signal.lfilter(b,a,y)
+y = signal.lfilter(b,a,bes_arr)
+z = signal.lfilter(b,a,y)
 
-for i in bes_arr:
-    y = signal.medfilt(i,155)
-    c = str(y)
+for i in z:
+    c = str(i)
     lfilter_record_f.write(c)
     lfilter_record_f.write(" ")
