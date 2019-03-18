@@ -76,7 +76,9 @@ while i <= 10000:
     i = i + 1
 
 y = signal.lfilter(b,a,bes_arr)
-for i in y:
+z = signal.lfilter(b,a,y)
+
+for i in z:
     c = str(i)
     lfilter_record_f.write(c)
     lfilter_record_f.write(" ")
