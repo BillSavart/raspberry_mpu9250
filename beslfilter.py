@@ -75,10 +75,11 @@ while i <= 10000:
     start = end
     i = i + 1
 
-y = signal.lfilter(b,a,bes_arr)
-z = signal.lfilter(b,a,y)
+#y = signal.medfilt(b,a,bes_arr)
+#z = signal.lfilter(b,a,y)
 
-for i in z:
-    c = str(i)
+for i in bes_arr:
+    y = signal.medfilt(i,155)
+    c = str(y)
     lfilter_record_f.write(c)
     lfilter_record_f.write(" ")
