@@ -74,21 +74,19 @@ while True:
         lfilt = signal.lfilter(b, a, bes_arr)
         lfilt = signal.lfilter(b, a, lfilt)
         if max(lfilt) < max_num and min(lfilt) > min_num:
-            for i in lfilt:
-                acc_lf.write("0 ")
+            pass
         else:
             i = 1
-            acc_lf.write(str(lfilt[0]))
-            acc_lf.write(" ")
             while i < sample_num:
-                acc_lf.write(str(lfilt[i]))
-                acc_lf.write(" ")
                 if lfilt[i] < max_num and lfilt[i] > min_num:
                     pass
                 else:
                     distance = distance + velocity*(time_arr[i]-time_arr[i-1])+0.5*lfilt[i]*(time_arr[i]-time_arr[i-1])*(time_arr[i]-time_arr[i-1])
                     velocity = velocity + lfilt[i]*(time_arr[i]-time_arr[i-1])
                 i = i + 1
+        for i in lfilt:
+                acc_lf.write(str(i))
+                acc_lf.write(" ")
         bes_arr = []
         time_arr = []
         print "distance: " , distance
