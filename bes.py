@@ -37,8 +37,8 @@ bes_arr = []
 time_arr = []
 
 #
-min_num = -0.5
-max_num = 0.5
+min_num = -0.3
+max_num = 0.2
 sample_num = 500
 
 # low pass filter 
@@ -78,8 +78,8 @@ while True:
         bes_arr = []
         time_arr = []
         print "distance: " , distance
-        #velocity_f.write(str(velocity))
-        #velocity_f.write(" ")
+        velocity_f.write(str(velocity))
+        velocity_f.write(" ")
     else:
         bes_arr.append(bes_y_ska)
         
