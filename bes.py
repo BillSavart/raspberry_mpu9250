@@ -78,6 +78,8 @@ while True:
                 acc_lf.write("0 ")
         else:
             i = 1
+            acc_lf.write(str(lfilt[0]))
+            acc_lf.write(" ")
             while i < sample_num:
                 acc_lf.write(str(lfilt[i]))
                 acc_lf.write(" ")
