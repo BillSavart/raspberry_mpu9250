@@ -51,6 +51,7 @@ velocity = 0
 
 velocity_f = open("vfile.txt","w")
 time_f = open("time.txt","w")
+time_total = 0
 dis_f = open("d_file.txt","w")
 acc_f = open("a_file.txt","w")
 acc_lf = open("al_file.txt","w")
@@ -86,7 +87,8 @@ while True:
         print "distance: " , distance
         velocity_f.write(str(velocity))
         velocity_f.write(" ")
-        time_f.write(str(time_temp))
+        time_total = time_total + time_temp
+        time_f.write(str(time_total))
         time_f.write(" ")
         dis_f.write(str(distance))
         dis_f.write(" ")
