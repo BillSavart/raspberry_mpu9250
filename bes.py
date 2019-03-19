@@ -51,6 +51,9 @@ velocity = 0
 
 velocity_f = open("vfile.txt","w")
 time_f = open("time.txt","w")
+dis_f = open("d_file.txt","w")
+acc_f = open("a_file.txt","w")
+acc_lf = open("al_file.txt","w")
 
 while True:
     time_temp = time.time()
@@ -70,6 +73,8 @@ while True:
         else:
             i = 1
             while i < sample_num:
+                acc_lf.write(str(lfilt[i]))
+                acc_lf.write(" ")
                 if lfilt[i] < max_num and lfilt[i] > min_num:
                     pass
                 else:
@@ -83,6 +88,10 @@ while True:
         velocity_f.write(" ")
         time_f.write(str(time_temp))
         time_f.write(" ")
+        dis_f.write(str(distance))
+        dis_f.write(" ")
     else:
         bes_arr.append(bes_y_ska)
+        acc_f.write(str(bes_y_ska))
+        acc_f.write(" ")
         
