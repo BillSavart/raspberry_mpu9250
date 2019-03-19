@@ -87,13 +87,13 @@ while True:
         print "distance: " , distance
         velocity_f.write(str(velocity))
         velocity_f.write(" ")
-        time_total = time_total + time_temp
-        time_f.write(str(time_total))
-        time_f.write(" ")
         dis_f.write(str(distance))
         dis_f.write(" ")
     else:
         bes_arr.append(bes_y_ska)
         acc_f.write(str(bes_y_ska))
         acc_f.write(" ")
+        time_total = time_total + time_temp
+        time_f.write(str(time_total))
+        time_f.write(" ")
         
