@@ -50,6 +50,7 @@ distance = 0
 velocity = 0
 
 velocity_f = open("vfile.txt","w")
+time_f = open("time.txt","w")
 
 while True:
     time_temp = time.time()
@@ -80,6 +81,8 @@ while True:
         print "distance: " , distance
         velocity_f.write(str(velocity))
         velocity_f.write(" ")
+        time_f.write(str(time_temp))
+        time_f.write(" ")
     else:
         bes_arr.append(bes_y_ska)
         
