@@ -66,11 +66,16 @@ while True:
 
     bes_y_ska = bes_y / 16384.0 * 9.8
 
+    time_total  = time_total + time_temp
+    time_f.write(str(time_total))
+    time_f.write(" ")
+
     if len(bes_arr) == sample_num:
         lfilt = signal.lfilter(b, a, bes_arr)
         lfilt = signal.lfilter(b, a, lfilt)
         if max(lfilt) < max_num and min(lfilt) > min_num:
-            pass
+            for i in lfilt:
+                acc_lf.write("0 ")
         else:
             i = 1
             while i < sample_num:
@@ -89,11 +94,14 @@ while True:
         velocity_f.write(" ")
         dis_f.write(str(distance))
         dis_f.write(" ")
+        acc_f.write(str(bes_y_ska))
+        acc_f.write(" ")
     else:
+        velocity_f.write(str(velocity))
+        velocity_f.write(" ")
+        dis_f.write(str(distance))
+        dis_f.write(" ")
         bes_arr.append(bes_y_ska)
         acc_f.write(str(bes_y_ska))
         acc_f.write(" ")
-        time_total = time_total + time_temp
-        time_f.write(str(time_total))
-        time_f.write(" ")
         
