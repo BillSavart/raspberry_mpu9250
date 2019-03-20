@@ -47,7 +47,7 @@ time_sum = 0
 start = 0
 end = 0
 
-while i <= 40000:
+while i <= 5000:
 
     beschleunigung_xout = read_word_2c(0x3b, address)
     beschleunigung_yout = read_word_2c(0x3d, address)
@@ -74,6 +74,8 @@ while i <= 40000:
     time_f.write(" ")
     start = end
     i = i + 1
+
+print "Over"
 
 y = signal.lfilter(b, a, bes_arr)
 z = signal.lfilter(b, a, y)
