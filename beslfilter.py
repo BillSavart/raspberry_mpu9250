@@ -53,17 +53,17 @@ while i <= 10000:
     beschleunigung_yout = read_word_2c(0x3d, address)
     beschleunigung_zout = read_word_2c(0x3f, address)
 
-    beschleunigung_yout_skaliert = beschleunigung_yout / 16384.0 * 9.8
+    beschleunigung_xout_skaliert = beschleunigung_xout / 16384.0 * 9.8
 
     if i == 0:
-        bes_arr = [beschleunigung_yout_skaliert]
-        bes_c = str(beschleunigung_yout_skaliert)
+        bes_arr = [beschleunigung_xout_skaliert]
+        bes_c = str(beschleunigung_xout_skaliert)
         record_f.write(bes_c)
         record_f.write(" ")
         start = time.time()
     else:
-        bes_arr.append(beschleunigung_yout_skaliert)
-        bes_c = str(beschleunigung_yout_skaliert)
+        bes_arr.append(beschleunigung_xout_skaliert)
+        bes_c = str(beschleunigung_xout_skaliert)
         record_f.write(bes_c)
         record_f.write(" ")
 
