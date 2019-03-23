@@ -14,8 +14,7 @@ def positionInitiate(event,x,y,flags,param):
     global position_y
     global inti_flag
 
-    if inti_flag == False and event == cv2.EVENT_LBUTTONDOWN:
-        inti_flag = True    
+    if inti_flag == False and event == cv2.EVENT_LBUTTONDOWN and direction == "None":    
         position_x = x
         position_y = y
         print "x: ",x
@@ -38,8 +37,9 @@ def main():
     cv2.waitKey(0)
 
     while(True):
+        cv2.circle(image.(position_x,position_y),3,(255,255,255),5)
         addNewPosition()
-        cv2.circle(image,(position_x,position_y),3,(255,255,255),10)
+        cv2.circle(image,(position_x,position_y),3,(0,0,0),5)
         cv2.imshow("Image",image)
         time.sleep(1)
         if cv2.waitKey() == ord('q'):
