@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 
 # Image
-image = cv2.imread("indoor_position.JPG", 1)
+image = cv2.imread("../IMAGE/indoor_position.JPG", 1)
 canny = image
 image_draw = image
 
@@ -57,7 +57,7 @@ def set_image(event, x, y, flags, param):
             cv2.line(image_draw, (mouse_door_start_x, mouse_door_start_y), (mouse_door_end_x, mouse_door_end_y), (255, 0, 0), 4)
             mouse_dbl_clk_flag = False
     elif event == cv2.EVENT_RBUTTONDOWN:
-        cv2.imwrite("image_draw.JPG",image_draw)
+        cv2.imwrite("../IMAGE/image_draw.JPG",image_draw)
         mouse_draw_flag = False
 
 def map_initiate():
