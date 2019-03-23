@@ -1,14 +1,17 @@
-#!/usr/bin/python
 import smbus
-import math
 import time
-import cv2
-import numpy as np
+import math
 
 # Register
 power_mgmt_1 = 0x6b
 power_mgmt_2 = 0x6c
- 
+
+# Variable
+start = 0  #for time interval
+
+sum_l = 0  #for turning
+sum_r = 0  
+
 def read_byte(reg):
     return bus.read_byte_data(address, reg)
  
@@ -25,85 +28,52 @@ def read_word_2c(reg):
     else:
         return val
 
-bus = smbus.SMBus(1) # bus = smbus.SMBus(0) fuer Revision 1
-address = 0x68       # via i2cdetect
+def read_gyro():
+    xout = read_word_2c(0x43)
+    yout = read_word_2c(0x45)
+    zout = read_word_2c(0x47)
+    return xout
+
+def turning_recognition(x, sum_L, sum_R):
+    if x > -4 and x < 4:
+        x = 0
+
+    if x == 0:
+        pass
+
+    elif x > 0:
+        sum_L = 0
+        sum_R = sum_R + x
+
+        if sum_R > 18000:
+            sum_R = 0
+            print "Turn Right"
+    else:
+        sum_R = 0
+        sum_L = sum_L + x
  
-# Aktivieren, um das Modul ansprechen zu koennen
+        if sum_L < -18000:
+            sum_L = 0
+            print "Turn Left"
+
+
+#main
+bus = smbus.SMBus(1) 
+address = 0x68       # via i2cdetect
 bus.write_byte_data(address, power_mgmt_1, 0)
 
-start = 0
-end = 0
-
-sum_r = 0
-sum_l = 0
-
-image = cv2.imread("image_draw.JPG", 1)
-cv2.imshow("Image", image)
-cv2.waitKey(0)
-
 while True:
- #   print "Gyroskop"
-#    print "--------"
-    break
-
     if start == 0:
         start = time.time()
 
     end = time.time()
-    #time_interval = end - start - 1
     time_interval = end - start
 
-    gyroskop_xout = read_word_2c(0x43)
-    gyroskop_yout = read_word_2c(0x45)
-    gyroskop_zout = read_word_2c(0x47)
+    gyro_xout = read_gyro() #read information from gyro
+    x_out = (gyro_xout * 250 * time_interval) / 131
 
-#    print "time_inter: ", time_interval
-
-    x_out = gyroskop_xout * 250 * time_interval / 131
-#    y_out = gyroskop_yout * 250 * time_interval / 131
- #   z_out = gyroskop_zout * 250 * time_interval / 131
-
-    if x_out > -4 and x_out < 4:
-        x_out = 0
-
-    if x_out == 0:
-    #    sum_r = 0
-     #   sum_l = 0
-      #  print "sum_r: ", sum_r
-       # print "sum_l: ", sum_l
-        pass
-    elif x_out > 0:
-        sum_l = 0
-        sum_r = sum_r + x_out
- #       print "sum_r: ", sum_r
-#        print "sum_l: ", sum_l
-        if sum_r > 18000:
-            print "sum_r: ", sum_r
-            print "sum_l: ", sum_l
-            sum_r = 0
-            print "Turn Right"
-    else:
-        sum_r = 0
-        sum_l = sum_l + x_out
-   #     print "sum_r: ", sum_r
-  #      print "sum_l: ", sum_l
-        if sum_l < -18000:
-            print "sum_r: ", sum_r
-            print "sum_l: ", sum_l
-            sum_l = 0
-            print "Turn Left"
+    #check if turning or not
+    turning_recognition(x_out, sum_l, sum_r)
      
-    #if x_out < -4 or x_out > 4:
-     #   print "x_out: ", x_out
-   # if y_out < -4 or y_out > 4:
-    #    print "y_out: ", y_out
-    #if z_out < -4 or z_out > 4:
-     #   print "z_out: ", z_out
-    
-   # print "gyroskop_xout: ", ("%5d" % gyroskop_xout), " skaliert: ", (gyroskop_xout / 131)
-   # print "gyroskop_yout: ", ("%5d" % gyroskop_yout), " skaliert: ", (gyroskop_yout / 131)
-   # print "gyroskop_zout: ", ("%5d" % gyroskop_zout), " skaliert: ", (gyroskop_zout / 131)
-
-    #print
     start = end
     time.sleep(1)
