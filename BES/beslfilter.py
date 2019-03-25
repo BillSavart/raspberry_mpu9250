@@ -47,7 +47,7 @@ time_sum = 0
 start = 0
 end = 0
 
-while i <= 20000:
+while i <= 200:
 
     beschleunigung_xout = read_word_2c(0x3b, address)
     beschleunigung_yout = read_word_2c(0x3d, address)
