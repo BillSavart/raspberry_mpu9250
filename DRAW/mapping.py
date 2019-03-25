@@ -17,8 +17,8 @@ def positionInitiate(event,x,y,flags,param):
         if inti_flag == False:
             position_x = x
             position_y = y
-            print "x: ",x
-            print "y: ",y
+            print ("x: ",x)
+            print ("y: ",y)
             inti_flag = True
         else:
             temp_x = x
@@ -33,7 +33,7 @@ def positionInitiate(event,x,y,flags,param):
                     direction = 180
                 else:
                     direction = 0
-            print "dir: ",direction
+            print ("dir: ",direction)
 
 def addNewPosition(direct,dist):
     global inti_flag
@@ -86,9 +86,8 @@ def main():
         addNewPosition("right",5)
         cv2.circle(image,(position_x,position_y),3,(0,0,0),5)
         cv2.imshow("Image",image)
-        if cv2.waitKey() == ord('q'):
+        if cv2.waitKey(500) & 0xFF == ord('q'):
             break
-
 
 
 if __name__ == "__main__" :
