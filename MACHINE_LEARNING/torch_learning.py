@@ -25,7 +25,7 @@ class Net(torch.nn.Module):
 
 
 # 训练次数
-TRAIN_TIMES = 200
+TRAIN_TIMES = 20
 # 输入输出的数据维度
 INPUT_FEATURE_DIM = 2
 OUTPUT_FEATURE_DIM = 2
