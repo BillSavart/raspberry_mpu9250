@@ -43,7 +43,7 @@ def turning_recognition(x, sum_L, sum_R):
 		x = 0
 
 	if x == 0:
-		return "No move"
+		return "Straight"
 
 	elif x > 0:
 		sum_L = 0
@@ -51,7 +51,7 @@ def turning_recognition(x, sum_L, sum_R):
 
 		if sum_R > 18000:
 			sum_R = 0
-			print "Turn Right"
+			#print "Turn Right"
 			return "Right"
 		else:
 			return "Straight"
@@ -61,7 +61,7 @@ def turning_recognition(x, sum_L, sum_R):
 
 		if sum_L < -18000:
 			sum_L = 0
-			print "Turn Left"
+			#print "Turn Left"
 			return "Left"
 		else:
 			return "Straight"
@@ -88,6 +88,13 @@ bus.write_byte_data(address, power_mgmt_1, 0)
 sk = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 sk.connect((HOST, PORT))
 
+#file
+data_f = open('data.txt', 'w')
+time_f = open('time.txt', 'w')
+time_sum = 0
+file_start = 0
+file_end = 0
+
 while True:
 	if start == 0:
 		start = time.time()
@@ -97,12 +104,16 @@ while True:
 
 	gyro_xout = read_gyro() #read information from gyro
 	x_out = (gyro_xout * 250 * time_interval) / 131
+	#data_f.write(x_out)
+	#data_f.write(" ")
+	#time_sum = time_sum + time_interval
 
 	#check if turning or not
 	turn = turning_recognition(x_out, sum_l, sum_r)
 
 	#socket
 	skt(turn, sk)
+
 
 	#falling(x_out)
 
