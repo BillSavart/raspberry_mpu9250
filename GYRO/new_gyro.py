@@ -51,7 +51,6 @@ def turning_recognition(x, sum_L, sum_R):
 
 		if sum_R > 18000:
 			sum_R = 0
-			#print "Turn Right"
 			return "Right"
 		else:
 			return "Straight"
@@ -61,7 +60,6 @@ def turning_recognition(x, sum_L, sum_R):
 
 		if sum_L < -18000:
 			sum_L = 0
-			#print "Turn Left"
 			return "Left"
 		else:
 			return "Straight"
@@ -85,13 +83,18 @@ bus = smbus.SMBus(1)
 address = 0x68       # via i2cdetect
 bus.write_byte_data(address, power_mgmt_1, 0)
 
-sk = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-sk.connect((HOST, PORT))
+#sk = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+#sk.connect((HOST, PORT))
 
 #file
 data_f = open('data.txt', 'w')
 time_f = open('time.txt', 'w')
 time_sum = 0
+
+count_time = 0
+count_start = 0
+count_end = 0
+j = 0
 
 while True:
 	if start == 0:
@@ -113,11 +116,23 @@ while True:
 
 	#check if turning or not
 	turn = turning_recognition(x_out, sum_l, sum_r)
-
+	print turn
 	#socket
-	skt(turn, sk)
+	#skt(turn, sk)
 
 	#falling(x_out)
 
 	start = end
-	time.sleep(1)
+	#time.sleep(1)
+	#count_start = time.time()
+	while count_time < 1100:
+		while j < 1000:
+			j = j + 1
+		count_time = count_time + 1
+		j = 0
+
+	j = 0
+	count_time = 0
+	#count_end = time.time() - count_start
+
+	#print count_end
