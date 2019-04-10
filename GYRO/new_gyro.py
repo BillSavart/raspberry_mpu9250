@@ -92,8 +92,6 @@ sk.connect((HOST, PORT))
 data_f = open('data.txt', 'w')
 time_f = open('time.txt', 'w')
 time_sum = 0
-file_start = 0
-file_end = 0
 
 while True:
 	if start == 0:
@@ -104,16 +102,20 @@ while True:
 
 	gyro_xout = read_gyro() #read information from gyro
 	x_out = (gyro_xout * 250 * time_interval) / 131
-	#data_f.write(x_out)
-	#data_f.write(" ")
-	#time_sum = time_sum + time_interval
+
+	x_str = str(x_out)
+	data_f.write(x_str)
+	data_f.write(" ")
+	time_sum = time_sum + time_interval
+	t = str(time_sum)
+	time_f.write(t)
+	time_f.write(" ")
 
 	#check if turning or not
 	turn = turning_recognition(x_out, sum_l, sum_r)
 
 	#socket
 	skt(turn, sk)
-
 
 	#falling(x_out)
 
