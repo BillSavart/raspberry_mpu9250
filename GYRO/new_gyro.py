@@ -39,7 +39,7 @@ def read_gyro():
 	return xout
 
 def turning_recognition(x, sum_L, sum_R):
-	if x > -4 and x < 4:
+	if x > -1 and x < 1:
 		x = 0
 
 	if x == 0:
