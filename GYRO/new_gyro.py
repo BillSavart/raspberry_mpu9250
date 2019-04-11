@@ -36,14 +36,13 @@ def read_gyro():
 	return xout
 
 def turning_recognition(x):
-	if x >= -6000 and x <= 6000:
+	if x >= -10000 and x <= 10000:
 		print x
 		return "No Move"
-
-	elif x > 6000:
+	elif x > 10000:
 		print x
 		return "Right"
-	elif x < -6000:
+	elif x < -10000:
 		print x
 		return "Left"
 
