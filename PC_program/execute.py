@@ -36,7 +36,7 @@ def service_connection(key, mask,sel,image):
     if mask & selectors.EVENT_WRITE:
         if data.outb:
             print('echoing', repr(data.outb), 'to', data.addr)
-            drawNewSpot(image,data.outb,decode())
+            drawNewSpot(image,data.outb.decode())
             sent = sock.send(data.outb)  # Should be ready to write
             data.outb = data.outb[sent:]
 
@@ -103,11 +103,11 @@ def addNewPosition(direct,dist):
         pixel_num = int(map_cm*100/1.5) # change to pixel
         
         if direction == 0:
-            position_y += pixel_num
+            position_y -= pixel_num
         elif direction == 90:
             position_x += pixel_num
         elif direction == 180:
-            position_y -= pixel_num
+            position_y += pixel_num
         elif direction == 270:
             position_x -= pixel_num
         else:
