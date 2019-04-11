@@ -99,6 +99,7 @@ while True:
 	#check if turning or not
 	turn = turning_recognition(x_out)
 	print turn
+	print
 	#socket
 	#skt(turn, sk)
 
