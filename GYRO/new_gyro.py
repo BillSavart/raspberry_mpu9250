@@ -13,9 +13,6 @@ power_mgmt_2 = 0x6c
 # Variable
 start = 0  #for time interval
 
-sum_l = 0  #for turning
-sum_r = 0  
-
 def read_byte(reg):
 	return bus.read_byte_data(address, reg)
 
@@ -38,31 +35,17 @@ def read_gyro():
 	zout = read_word_2c(0x47)
 	return xout
 
-def turning_recognition(x, sum_L, sum_R):
-	if x > -1 and x < 1:
-		x = 0
+def turning_recognition(x):
+	if x >= -6000 and x <= 6000:
+		print x
+		return "No Move"
 
-	if x == 0:
-		return "Straight"
-
-	elif x > 0:
-		sum_L = 0
-		sum_R = sum_R + x
-
-		if sum_R > 18000:
-			sum_R = 0
-			return "Right"
-		else:
-			return "Straight"
-	else:
-		sum_R = 0
-		sum_L = sum_L + x
-
-		if sum_L < -18000:
-			sum_L = 0
-			return "Left"
-		else:
-			return "Straight"
+	elif x > 6000:
+		print x
+		return "Right"
+	elif x < -6000:
+		print x
+		return "Left"
 
 def falling(yout):
 	print "yout" , yout
@@ -115,7 +98,7 @@ while True:
 	time_f.write(" ")
 
 	#check if turning or not
-	turn = turning_recognition(x_out, sum_l, sum_r)
+	turn = turning_recognition(x_out)
 	print turn
 	#socket
 	#skt(turn, sk)
