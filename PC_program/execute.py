@@ -87,7 +87,7 @@ def addNewPosition(direct,dist):
             direction -= 90
             if direction < 0:
                 direction += 360
-        elif direct == "Straight" or direct == "":
+        elif direct == "No Turn" or direct == "":
             pass #no direction changes
         else:
             print(direct)
