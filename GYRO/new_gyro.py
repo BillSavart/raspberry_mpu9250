@@ -13,8 +13,8 @@ power_mgmt_2 = 0x6c
 # Variable
 start = 0  #for time interval
 
-sum_l = 0  #for turning
-sum_r = 0  
+sum_r = 0
+sum_l = 0
 
 def read_byte(reg):
 	return bus.read_byte_data(address, reg)
@@ -38,31 +38,33 @@ def read_gyro():
 	zout = read_word_2c(0x47)
 	return xout
 
-def turning_recognition(x, sum_L, sum_R):
-	if x > -1 and x < 1:
-		x = 0
-
-	if x == 0:
-		return "Straight"
-
-	elif x > 0:
-		sum_L = 0
-		sum_R = sum_R + x
-
-		if sum_R > 18000:
-			sum_R = 0
-			return "Right"
-		else:
-			return "Straight"
-	else:
-		sum_R = 0
-		sum_L = sum_L + x
-
-		if sum_L < -18000:
-			sum_L = 0
-			return "Left"
-		else:
-			return "Straight"
+def turning_recognition(x,T):
+	global sum_r
+	global sum_l
+	print "sumr: ", sum_r
+	print "suml: ", sum_l
+	print x
+	print
+	if x >= -10000 and x <= 10000:
+		sum_r = 0
+		sum_l = 0
+		return "No Turn"
+	elif x > 10000:
+		sum_l = 0
+		sum_r += x*T
+#		if sum_r >= 15000 or x > 30000:
+#			print x
+#			sum_r = 0
+		return "Right"
+	elif x < -10000:
+		sum_r = 0
+		sum_l += x*T
+#		if sum_l <= -15000 or x < -30000:
+#			print x
+#			sum_l = 0
+		return "Left"
+#	else:
+#		pass 
 
 def falling(yout):
 	print "yout" , yout
@@ -89,6 +91,8 @@ bus.write_byte_data(address, power_mgmt_1, 0)
 #file
 data_f = open('data.txt', 'w')
 time_f = open('time.txt', 'w')
+sum_r_f = open('sum_r.txt','w')
+sum_l_f = open('sum_l.txt','w')
 time_sum = 0
 
 count_time = 0
@@ -115,8 +119,9 @@ while True:
 	time_f.write(" ")
 
 	#check if turning or not
-	turn = turning_recognition(x_out, sum_l, sum_r)
+	turn = turning_recognition(x_out,time_interval)
 	print turn
+	print
 	#socket
 	#skt(turn, sk)
 
@@ -124,15 +129,15 @@ while True:
 
 	start = end
 	#time.sleep(1)
-	#count_start = time.time()
-	while count_time < 1100:
-		while j < 1000:
+	count_start = time.time()
+	while count_time < 800:
+		while j < 700:
 			j = j + 1
 		count_time = count_time + 1
 		j = 0
 
 	j = 0
 	count_time = 0
-	#count_end = time.time() - count_start
+	count_end = time.time() - count_start
 
-	#print count_end
+#	print count_end
