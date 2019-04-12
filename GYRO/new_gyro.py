@@ -39,40 +39,32 @@ def read_gyro():
 	return xout
 
 def turning_recognition(x,T):
-#	if x >= -10000 and x <= 10000:
-#		print x
-#		return "No Move"
-#	elif x > 10000:
-#		print x
-#		return "Right"
-#	elif x < -10000:
-#		print x
-#		return "Left"
 	global sum_r
 	global sum_l
 	print "sumr: ", sum_r
 	print "suml: ", sum_l
+	print x
 	print
-	
-	if x >= -10^4 and x <= 10^4:
+	if x >= -10000 and x <= 10000:
 		sum_r = 0
 		sum_l = 0
-		return "No Move"
-	elif x > 2*10^4:
+		return "No Turn"
+	elif x > 10000:
 		sum_l = 0
 		sum_r += x*T
-		if sum_r >= 15000 or x > 4 * 10^4:
-			sum_r = 0
-			return "Right"
-	elif x < -2*10^4:
+#		if sum_r >= 15000 or x > 30000:
+#			print x
+#			sum_r = 0
+		return "Right"
+	elif x < -10000:
 		sum_r = 0
 		sum_l += x*T
-		if sum_l <= -15000 or x < -4*10^4:
-			sum_l = 0
-			return "Left"
-	else:
-		sum_r = 0
-		sum_l = 0
+#		if sum_l <= -15000 or x < -30000:
+#			print x
+#			sum_l = 0
+		return "Left"
+#	else:
+#		pass 
 
 def falling(yout):
 	print "yout" , yout
@@ -99,6 +91,8 @@ bus.write_byte_data(address, power_mgmt_1, 0)
 #file
 data_f = open('data.txt', 'w')
 time_f = open('time.txt', 'w')
+sum_r_f = open('sum_r.txt','w')
+sum_l_f = open('sum_l.txt','w')
 time_sum = 0
 
 count_time = 0
@@ -135,15 +129,15 @@ while True:
 
 	start = end
 	#time.sleep(1)
-	#count_start = time.time()
-	while count_time < 1100:
-		while j < 1000:
+	count_start = time.time()
+	while count_time < 800:
+		while j < 700:
 			j = j + 1
 		count_time = count_time + 1
 		j = 0
 
 	j = 0
 	count_time = 0
-	#count_end = time.time() - count_start
+	count_end = time.time() - count_start
 
-	#print count_end
+#	print count_end
