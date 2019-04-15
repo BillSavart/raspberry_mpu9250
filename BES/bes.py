@@ -56,20 +56,27 @@ dis_f = open("d_file.txt","w")
 acc_f = open("a_file.txt","w")
 acc_lf = open("al_file.txt","w")
 
-while True:
-    time_temp = time.time()
-    time_arr.append(time_temp)
+while True:	
+	time_temp = time.time()	
+	time_arr.append(time_temp)
 
-    bes_x = read_word_2c(0x3b, address)
-    bes_y = read_word_2c(0x3d, address)
-    bes_z = read_word_2c(0x3f, address)
+	bes_x = read_word_2c(0x3b, address)
+	bes_y = read_word_2c(0x3d, address)
+	bes_z = read_word_2c(0x3f, address)
 
-    bes_y_ska = bes_y / 16384.0 * 9.8
+	bes_x_ska = bes_x / 16384.0 * 9.8
+	bes_y_ska = bes_y / 16384.0 * 9.8
+	bes_z_ska = bes_z / 16384.0 * 9.8
 
-    time_total  = time_total + time_temp
-    time_f.write(str(time_total))
-    time_f.write(" ")
+	print "x:", bes_x_ska
+	print "y:", bes_y_ska
+	print "z:", bes_z_ska
+	print
 
+    #time_total  = time_total + time_temp
+    #time_f.write(str(time_total))
+    #time_f.write(" ")
+'''
     if len(bes_arr) == sample_num:
         lfilt = signal.lfilter(b, a, bes_arr)
         lfilt = signal.lfilter(b, a, lfilt)
@@ -84,24 +91,24 @@ while True:
                     distance = distance + velocity*(time_arr[i]-time_arr[i-1])+0.5*lfilt[i]*(time_arr[i]-time_arr[i-1])*(time_arr[i]-time_arr[i-1])
                     velocity = velocity + lfilt[i]*(time_arr[i]-time_arr[i-1])
                 i = i + 1
-        for i in lfilt:
-                acc_lf.write(str(i))
-                acc_lf.write(" ")
-        bes_arr = []
-        time_arr = []
-        print "distance: " , distance
-        velocity_f.write(str(velocity))
-        velocity_f.write(" ")
-        dis_f.write(str(distance))
-        dis_f.write(" ")
-        acc_f.write(str(bes_y_ska))
-        acc_f.write(" ")
-    else:
-        velocity_f.write(str(velocity))
-        velocity_f.write(" ")
-        dis_f.write(str(distance))
-        dis_f.write(" ")
-        bes_arr.append(bes_y_ska)
-        acc_f.write(str(bes_y_ska))
-        acc_f.write(" ")
-        
+        #for i in lfilt:
+                #acc_lf.write(str(i))
+                #acc_lf.write(" ")
+        #bes_arr = []
+        #time_arr = []
+        #print "distance: " , distance
+        #velocity_f.write(str(velocity))
+        #velocity_f.write(" ")
+        #dis_f.write(str(distance))
+        #dis_f.write(" ")
+        #acc_f.write(str(bes_y_ska))
+        #acc_f.write(" ")
+    #else:
+        #velocity_f.write(str(velocity))
+        #velocity_f.write(" ")
+        #dis_f.write(str(distance))
+        #dis_f.write(" ")
+        #bes_arr.append(bes_y_ska)
+        #acc_f.write(str(bes_y_ska))
+        #acc_f.write(" ")
+'''        
