@@ -99,6 +99,8 @@ def addNewPosition(direct,dist):
         dist_cm = dist*100 # change meter to centimeter
         if dist_cm < 320:
             dist_save = dist_save + dist
+        else:
+            dist_save = 0
         map_cm = dist_cm/320 # change the billy ruler
         pixel_num = int(map_cm*100/1.5) # change to pixel
         
@@ -118,7 +120,7 @@ def drawNewSpot(image,data):
     global position_y
 
     cv2.circle(image,(position_x,position_y),1,(255,255,255),5)
-    addNewPosition(data,1)
+    addNewPosition(data,0.1)
     cv2.circle(image,(position_x,position_y),1,(0,0,0),5)
 
 
