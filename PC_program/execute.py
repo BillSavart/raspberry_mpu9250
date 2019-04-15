@@ -118,7 +118,7 @@ def drawNewSpot(image,data):
     global position_y
 
     cv2.circle(image,(position_x,position_y),1,(255,255,255),5)
-    addNewPosition(data,1)
+    addNewPosition(data,0.1)
     cv2.circle(image,(position_x,position_y),1,(0,0,0),5)
 
 
