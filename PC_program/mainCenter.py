@@ -1,26 +1,22 @@
 import sys
-from setMapUi import Ui_Form
+from mainUi import Ui_Form
 from PyQt5.QtWidgets import QMainWindow, QApplication, QFileSystemModel, QTreeView,QVBoxLayout
+from PyQt5.QtGui import QImage,QPixmap,QCursor
 import os
+import cv2
+import time
 
-MAP_FILE_DIST = "../../IMAGE/indoor_position.JPG"
-
+MAP_FILE_DIST = "../IMAGE/image_draw.JPG"
 
 class MainWindow(QMainWindow, Ui_Form):
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
         self.setupUi(self)
-        self.btnOk.clicked.connect(self.btnOk_onclick)
-        self.btnLoadMap.clicked.connect(self.btnLoadMap_onclick)
-        self.btnMapInit.clicked.connect(self.btnMapInit_onclick)
-    
-    def btnLoadMap_onclick(self):
-
-    def btnMapInit_onclick(self): 
-        pass
-
-    def btnOk_onclick(self):
-        pass
+        img = cv2.imread(MAP_FILE_DIST,1)
+        height, weight, channel = img.shape
+        image = QImage(img.data,height,weight,3,QImage.Format_RGB888)
+        pixmap = QPixmap.fromImage(image)
+        self.label_map.setPixmap(pixmap)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

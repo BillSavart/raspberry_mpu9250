@@ -1,9 +1,10 @@
 import selectors
 import socket
 import types
+import time
 
 host = '192.168.68.97'
-port = 7777
+port = 12345
 
 def accept_wrapper(sock):
     conn, addr = sock.accept()  # Should be ready to read
@@ -38,6 +39,7 @@ try:
     print('listening on', (host, port))
     lsock.setblocking(False)
     sel.register(lsock, selectors.EVENT_READ, data=None)
+    start = time.time()
     while True:
         events = sel.select(timeout=None)
         for key, mask in events:
@@ -45,6 +47,7 @@ try:
                 accept_wrapper(key.fileobj)
             else:
                 service_connection(key, mask)
+
 finally:
     lsock.close()
 print("close socket")
