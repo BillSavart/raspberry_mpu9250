@@ -4,25 +4,38 @@ import time
 import socket
 import selectors
 import types
+from structure_connect import StructureConnection
 
 inti_flag = False
 position_x = 0
 position_y = 0
 direction = -1
 dist_save = 0
-
+connection_arr = list()
+connection_num = np.zeros(9)
 host = '192.168.68.97'
 port = 7777
  
 def accept_wrapper(sock,sel):
+    global connection_arr
+    global connection_num
     conn, addr = sock.accept()  # Should be ready to read
     print('accepted connection from', addr)
+    i = 1
+    while(i<10):
+        if(connection_num[i] == 0):
+            connection_arr.append(StructureConnection(i,str(addr[0])))
+            connection_num[i] = 1
+            break
+        i = i + 1
+    # add new connection
     conn.setblocking(False)
     data = types.SimpleNamespace(addr=addr, inb=b'', outb=b'')
     events = selectors.EVENT_READ | selectors.EVENT_WRITE
     sel.register(conn, events, data=data)
 
 def service_connection(key, mask,sel,image):
+    global connection_arr
     sock = key.fileobj
     data = key.data
     if mask & selectors.EVENT_READ:
@@ -31,6 +44,14 @@ def service_connection(key, mask,sel,image):
             data.outb += recv_data
         else:
             print('closing connection to', data.addr)
+            print(str(data.addr[0]))
+            print(connection_arr[0].ip_addr)
+            if(str(data.addr[0]) == connection_arr[0].ip_addr):
+                print("Yes")
+ #           for i in connection_arr:
+ #               if(i.ip_addr == str(data.addr[0])):
+ #                   print("Yes")
+ #                   break
             sel.unregister(sock)
             sock.close()
     if mask & selectors.EVENT_WRITE:
@@ -39,6 +60,7 @@ def service_connection(key, mask,sel,image):
             drawNewSpot(image,data.outb.decode())
             sent = sock.send(data.outb)  # Should be ready to write
             data.outb = data.outb[sent:]
+    
 
 def positionInitiate(event,x,y,flags,param):
     global position_x
@@ -68,7 +90,7 @@ def positionInitiate(event,x,y,flags,param):
                     direction = 0
             print ("dir: ",direction)
 
-def addNewPosition(direct,dist):
+def addNewPosition(direct,dist,image):
     global inti_flag
     global direction
     global position_x
@@ -115,18 +137,21 @@ def addNewPosition(direct,dist):
         else:
             pass
 
+ #######    # running handling
 def drawNewSpot(image,data):
     global position_x
     global position_y
+    global connection_arr
 
-    cv2.circle(image,(position_x,position_y),1,(255,255,255),5)
-    addNewPosition(data,0.1)
-    cv2.circle(image,(position_x,position_y),1,(0,0,0),5)
+    cv2.putText(image,str(connection_arr[0].id_num),(position_x,position_y),cv2.FONT_HERSHEY_PLAIN,1,(255,255,255),2)
+    addNewPosition(data,0.1,image)
+    cv2.putText(image,str(connection_arr[0].id_num),(position_x,position_y),cv2.FONT_HERSHEY_PLAIN,1,connection_arr[0].color_set,2)
 
 
 def main():
     global position_x
     global position_y
+    global connection_arr
 
     image = cv2.imread("../IMAGE/image_draw.JPG")
     cv2.namedWindow("Image")
@@ -143,17 +168,16 @@ def main():
         print('listening on', (host, port))
         lsock.setblocking(False)
         sel.register(lsock, selectors.EVENT_READ, data=None)
-        while True:    
-            events = sel.select(timeout=None)
-            for key, mask in events:
+        while True:
+            events = sel.select(timeout=None)########shutttttttt down
+            for key, mask in events:      
                 if key.data is None:
                     accept_wrapper(key.fileobj,sel)
                 else:
-                    service_connection(key, mask,sel,image)
+                    service_connection(key, mask,sel,image)    
             cv2.imshow("Image",image)
             if cv2.waitKey(500) & 0xFF == ord('q'):
                 break
-
     finally:
         lsock.close()
         print("close socket")
