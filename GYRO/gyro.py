@@ -1,75 +1,81 @@
-#!/usr/bin/python
 import smbus
+import time
 import math
- 
+import socket
+
+HOST = '192.168.68.98'
+PORT = 7777
+
 # Register
 power_mgmt_1 = 0x6b
 power_mgmt_2 = 0x6c
- 
+
+# Variable
+start = 0  #for time interval
+
 def read_byte(reg):
-    return bus.read_byte_data(address, reg)
- 
+	return bus.read_byte_data(address, reg)
+
 def read_word(reg):
-    h = bus.read_byte_data(address, reg)
-    l = bus.read_byte_data(address, reg+1)
-    value = (h << 8) + l
-    return value
- 
+	h = bus.read_byte_data(address, reg)
+	l = bus.read_byte_data(address, reg+1)
+	value = (h << 8) + l
+	return value
+
 def read_word_2c(reg):
-    val = read_word(reg)
-    if (val >= 0x8000):
-        return -((65535 - val) + 1)
-    else:
-        return val
- 
-def dist(a,b):
-    return math.sqrt((a*a)+(b*b))
- 
-def get_y_rotation(x,y,z):
-    radians = math.atan2(x, dist(y,z))
-    return -math.degrees(radians)
- 
-def get_x_rotation(x,y,z):
-    radians = math.atan2(y, dist(x,z))
-    return math.degrees(radians)
+	val = read_word(reg)
+	if (val >= 0x8000):
+		return -((65535 - val) + 1)
+	else:
+		return val
 
-def get_z_rotation(x,y,z):
-    radians = math.atan2(z, dist(x,y))
-    return math.degrees(radians)
+def read_gyro():
+	xout = read_word_2c(0x43)
+	yout = read_word_2c(0x45)
+	zout = read_word_2c(0x47)
+	return xout
 
-bus = smbus.SMBus(1) # bus = smbus.SMBus(0) fuer Revision 1
+def turning_recognition(x,T):
+	if x >= -10000 and x <= 10000:
+		return "No Turn"
+	elif x > 10000:
+		return "Right"
+	elif x < -10000:
+		return "Left"
+
+def falling(yout):
+	print "yout" , yout
+
+#main
+bus = smbus.SMBus(1) 
 address = 0x68       # via i2cdetect
- 
-# Aktivieren, um das Modul ansprechen zu koennen
 bus.write_byte_data(address, power_mgmt_1, 0)
- 
-print "Gyroskop"
-print "--------"
- 
-gyroskop_xout = read_word_2c(0x43)
-gyroskop_yout = read_word_2c(0x45)
-gyroskop_zout = read_word_2c(0x47)
 
-print "gyroskop_xout: ", ("%5d" % gyroskop_xout), " skaliert: ", (gyroskop_xout / 131)
-print "gyroskop_yout: ", ("%5d" % gyroskop_yout), " skaliert: ", (gyroskop_yout / 131)
-print "gyroskop_zout: ", ("%5d" % gyroskop_zout), " skaliert: ", (gyroskop_zout / 131)
- 
-print
-print "Beschleunigungssensor"
-print "---------------------"
- 
-beschleunigung_xout = read_word_2c(0x3b)
-beschleunigung_yout = read_word_2c(0x3d)
-beschleunigung_zout = read_word_2c(0x3f)
- 
-beschleunigung_xout_skaliert = beschleunigung_xout / 16384.0
-beschleunigung_yout_skaliert = beschleunigung_yout / 16384.0
-beschleunigung_zout_skaliert = beschleunigung_zout / 16384.0
- 
-print "beschleunigung_xout: ", ("%6d" % beschleunigung_xout), " skaliert: ", beschleunigung_xout_skaliert
-print "beschleunigung_yout: ", ("%6d" % beschleunigung_yout), " skaliert: ", beschleunigung_yout_skaliert
-print "beschleunigung_zout: ", ("%6d" % beschleunigung_zout), " skaliert: ", beschleunigung_zout_skaliert
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.connect((HOST,PORT))
 
-print "X Rotation: " , get_x_rotation(beschleunigung_xout_skaliert, beschleunigung_yout_skaliert, beschleunigung_zout_skaliert)
-print "Y Rotation: " , get_y_rotation(beschleunigung_xout_skaliert, beschleunigung_yout_skaliert, beschleunigung_zout_skaliert)
-print "Z Rotation: " , get_z_rotation(beschleunigung_xout_skaliert, beschleunigung_yout_skaliert, beschleunigung_zout_skaliert)
+try:
+	while True:
+		if start == 0:
+			start = time.time()
+
+		end = time.time()
+		time_interval = end - start
+
+		gyro_xout = read_gyro() #read information from gyro
+		x_out = (gyro_xout * 250 * time_interval) / 131
+
+		#check if turning or not
+		turn = turning_recognition(x_out,time_interval)
+
+		#socket
+		s.send(turn)
+		data = s.recv(1024)
+		print(data)
+
+		#falling(x_out)
+
+		start = end
+finally:
+	s.close()
+	print "close"
