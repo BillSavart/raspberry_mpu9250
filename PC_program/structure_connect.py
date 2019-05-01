@@ -1,26 +1,20 @@
 import cv2
 
 class StructureConnection:
-    color_set = (0,0,0)
-    id_num = 0
-    ip_addr = ""
-    position_x = 0
-    position_y = 0
-    direction = -1
-    dist_save = 0
+    color_set = (0,0,0) # 紅綠燈的燈號
+    id_num = 0 # 顯示在Map的數字
+    ip_addr = "" # 裝置ip
+    position_x = 0 # 裝置在Map的位置(x)
+    position_y = 0 # 裝置在Map的位置(y)
+    direction = -1 # 裝置方向
+    dist_save = 0 # 距離暫存
   
-    def __init__(self,num,ip_position):
+    def __init__(self,num,ip_position): # Constructor
         self.color_set = (0,255,0)
         self.id_num = num
         self.ip_addr = ip_position
 
-    def addNewPosition(self,direct,dist,image):
-#        global inti_flag
-#        global direction
-#        global position_x
-#        global position_y
-#        global dist_save
- 
+    def addNewPosition(self,direct,dist,image): # 我們的function
         if self.direction != -1:
 # change direction        
             if direct == "Right":
@@ -52,9 +46,9 @@ class StructureConnection:
                 self.position_y -= pixel_num 
             elif self.direction == 90:
                 self.position_x += pixel_num
-            elif direction == 180:
+            elif self.direction == 180:
                 self.position_y += pixel_num
-            elif direction == 270:
+            elif self.direction == 270:
                 self.position_x -= pixel_num
             else:
                 pass

@@ -29,6 +29,7 @@ def accept_wrapper(sock,sel):
             break
         i = i + 1
     # add new connection
+    # 創造一個新的Object給Device
 #--------------------------------------------------------------------#
     conn.setblocking(False)
     data = types.SimpleNamespace(addr=addr, inb=b'', outb=b'')
@@ -52,12 +53,8 @@ def service_connection(key, mask,sel,image):
             for i in connection_arr:
                 if(i.ip_addr == str(data.addr[0])):
                     connection_num[i] = 0
-#            if(str(data.addr[0]) == connection_arr[0].ip_addr):
-#                print("Yes")
- #           for i in connection_arr:
- #               if(i.ip_addr == str(data.addr[0])):
- #                   print("Yes")
- #                   break
+
+            # Close Connection 的時候取消 Object
 #--------------------------------------------------------------------#
             sel.unregister(sock)
             sock.close()
@@ -69,6 +66,7 @@ def service_connection(key, mask,sel,image):
                 if(i.ip_addr == str(data.addr[0])):
                     drawNewSpot(image,data.outb.decode(),i.id_num)
                     break
+            # Device 傳輸資料時, call 對應function
 #--------------------------------------------------------------------#
             sent = sock.send(data.outb)  # Should be ready to write
             data.outb = data.outb[sent:]
@@ -140,6 +138,7 @@ def main():
             cv2.imshow("Image",image)
             if cv2.waitKey(500) & 0xFF == ord('q'):
                 break
+            # Show 我們的圖
 #-----------------------------------------------------------------#
     finally:
         lsock.close()
