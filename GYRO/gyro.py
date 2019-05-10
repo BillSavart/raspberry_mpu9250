@@ -13,6 +13,8 @@ power_mgmt_2 = 0x6c
 
 # Variable
 start = 0  #for time interval
+start_warning_time = 0
+help_flag = False
 
 def read_byte(reg):
 	return bus.read_byte_data(address, reg)
@@ -44,8 +46,13 @@ def turning_recognition(x,T):
 	elif x < -10000:
 		return "Left"
 
-def falling(yout):
-	print "yout" , yout
+def read_bes():
+	bes_x = read_word_2c(0x3b)
+	bes_y = read_word_2c(0x3d)
+	bes_z = read_word_2c(0x3f)
+
+	bes_x_ska = bes_x / 16384.0 * 9.8
+	return bes_x_ska
 
 #main
 bus = smbus.SMBus(1) 
@@ -70,11 +77,30 @@ try:
 		turn = turning_recognition(x_out,time_interval)
 
 		#socket
-		s.send(turn)
-		data = s.recv(1024)
-		print(data)
+		if help_flag == False:
+			s.send(turn)
+			data = s.recv(1024)
+			print(data)
 
-		#falling(x_out)
+		#check if falling
+		bes_xout = read_bes()
+		if bes_xout > -9:
+			if start_warning_time == 0:
+				start_warning_time = time.time()
+			else:
+				if time.time() - start_warning_time >= 5 and time.time() - start_warning_time < 10:
+					s.send("HELP")
+					data = s.recv(1024)
+					print(data)
+					help_flag = True
+
+				elif time.time() - start_warning_time >= 10:
+					s.send("HELP2")
+					data = s.recv(1024)
+					print(data)
+		else:
+			start_warning_time = 0
+			help_flag = False
 
 		start = end
 finally:
