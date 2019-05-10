@@ -64,7 +64,13 @@ def service_connection(key, mask,sel,image):
 #------------------------------------------------------------------#
             for i in connection_arr:
                 if(i.ip_addr == str(data.addr[0])):
-                    drawNewSpot(image,data.outb.decode(),i.id_num)
+                    if(data.outb.decode() == "HELP"):
+                        helpConditionExec("HELP",i.id_num,image)
+                    elif(data.outb.decode() == "HELP2"):
+                        helpConditionExec("HELP2",i.id_num,image)
+                    else:
+                        drawNewSpot(image,data.outb.decode(),i.id_num)
+                    
                     break
             # Device 傳輸資料時, call 對應function
 #--------------------------------------------------------------------#
@@ -76,9 +82,19 @@ def drawNewSpot(image,data,index):
     global connection_arr
 
     cv2.putText(image,str(connection_arr[index].id_num+1),(connection_arr[index].position_x,connection_arr[index].position_y),cv2.FONT_HERSHEY_PLAIN,1,(255,255,255),2)
-    connection_arr[index].addNewPosition(data,0.1,image)
+    if(data != "HELP"):
+        connection_arr[index].color_set = (0,255,0)
+        connection_arr[index].addNewPosition(data,0.1,image)
     cv2.putText(image,str(connection_arr[index].id_num+1),(connection_arr[index].position_x,connection_arr[index].position_y),cv2.FONT_HERSHEY_PLAIN,1,connection_arr[index].color_set,2)
 
+def helpConditionExec(message,num,image):
+    if(message == "HELP"):
+        connection_arr[num].color_set = (0,165,255)
+    elif (message == "HELP2"):
+        connection_arr[num].color_set = (0,0,255) 
+    else:
+       pass
+    drawNewSpot(image,"HELP",num)
 
 def addNewPoint(event,x,y,flags,param):
     global inti_flag
