@@ -9,7 +9,7 @@ from structure_connect import StructureConnection
 inti_flag = -1
 connection_arr = list()
 connection_num = np.zeros(9)
-host = '192.168.68.98'
+host = '192.168.68.99'
 port = 7777
  
 def accept_wrapper(sock,sel):
@@ -81,11 +81,11 @@ def service_connection(key, mask,sel,image):
 def drawNewSpot(image,data,index):
     global connection_arr
 
-    cv2.putText(image,str(connection_arr[index].id_num+1),(connection_arr[index].position_x,connection_arr[index].position_y),cv2.FONT_HERSHEY_PLAIN,1,(255,255,255),2)
+    cv2.putText(image,str(connection_arr[index].id_num+1),(connection_arr[index].position_x,connection_arr[index].position_y),cv2.FONT_HERSHEY_PLAIN,2,(255,255,255),3)
     if(data != "HELP"):
-        connection_arr[index].color_set = (0,255,0)
-        connection_arr[index].addNewPosition(data,0.1,image)
-    cv2.putText(image,str(connection_arr[index].id_num+1),(connection_arr[index].position_x,connection_arr[index].position_y),cv2.FONT_HERSHEY_PLAIN,1,connection_arr[index].color_set,2)
+        connection_arr[index].color_set = (0,139,0)
+        connection_arr[index].addNewPosition(data,0.05,image)
+    cv2.putText(image,str(connection_arr[index].id_num+1),(connection_arr[index].position_x,connection_arr[index].position_y),cv2.FONT_HERSHEY_PLAIN,2,connection_arr[index].color_set,3)
 
 def helpConditionExec(message,num,image):
     if(message == "HELP"):
@@ -129,7 +129,8 @@ def main():
         i = i + 1
 
     image = cv2.imread("../IMAGE/image_draw.JPG")
-    cv2.namedWindow("Image")
+    cv2.namedWindow("Image",0)
+    cv2.setWindowProperty("Image",cv2.WND_PROP_FULLSCREEN,cv2.WINDOW_FULLSCREEN )
     cv2.setMouseCallback("Image",addNewPoint)
     cv2.imshow("Image",image)
 
