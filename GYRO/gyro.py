@@ -69,6 +69,10 @@ bus.write_byte_data(address, power_mgmt_1, 0)
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.connect((HOST,PORT))
 
+####### FILE################
+record_f = open('stop.txt', 'w')
+time_f = open('stop_time.txt', 'w')
+count_file = 0
 try:
 	while True:
 		if start == 0:
@@ -109,10 +113,13 @@ try:
 			start_warning_time = 0
 			help_flag = False
 		
-		print("x: ", bes_xout)
-		print("y: ", read_bes_y())
-		print("time: ", time_interval)
-		print()
+		bes_yout = read_bes_y()
+		c = str(bes_yout)
+		record_f.write(c)
+		record_f.write("\n")
+		time_string = str(time_interval)
+		time_f.write(time_string)
+		time_f.write("\n")
 		start = end
 finally:
 	s.close()
