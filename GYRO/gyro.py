@@ -78,7 +78,7 @@ try:
 		time_interval = end - start
 
 		gyro_xout = read_gyro() #read information from gyro
-		x_out = (gyro_xout * 250 * time_interval) / 131
+		x_out = (gyro_xout * 250 * time_interval) / 131		
 
 		#check if turning or not
 		turn = turning_recognition(x_out,time_interval)
