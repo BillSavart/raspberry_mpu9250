@@ -70,8 +70,8 @@ s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.connect((HOST,PORT))
 
 ####### FILE################
-record_f = open('stop.txt', 'w')
-time_f = open('stop_time.txt', 'w')
+record_f = open('walk.txt', 'w')
+time_f = open('walk_time.txt', 'w')
 count_file = 0
 try:
 	while True:
