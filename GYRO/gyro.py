@@ -3,9 +3,8 @@ import time
 import math
 import socket
 
-
-HOST = '192.168.68.98'
-PORT = 7777
+HOST = '192.168.68.97'
+PORT = 8888
 
 # Register
 power_mgmt_1 = 0x6b
@@ -46,13 +45,21 @@ def turning_recognition(x,T):
 	elif x < -10000:
 		return "Left"
 
-def read_bes():
+def read_bes_x():
 	bes_x = read_word_2c(0x3b)
 	bes_y = read_word_2c(0x3d)
 	bes_z = read_word_2c(0x3f)
 
 	bes_x_ska = bes_x / 16384.0 * 9.8
 	return bes_x_ska
+
+def read_bes_y():
+	bes_x = read_word_2c(0x3b)
+	bes_y = read_word_2c(0x3d)
+	bes_z = read_word_2c(0x3f)
+
+	bes_y_ska = bes_y / 16384.0 * 9.8
+	return bes_y_ska
 
 #main
 bus = smbus.SMBus(1) 
@@ -80,10 +87,10 @@ try:
 		if help_flag == False:
 			s.send(turn)
 			data = s.recv(1024)
-			print(data)
+			#print(data)
 
 		#check if falling
-		bes_xout = read_bes()
+		bes_xout = read_bes_x()
 		if bes_xout > -9:
 			if start_warning_time == 0:
 				start_warning_time = time.time()
@@ -91,17 +98,21 @@ try:
 				if time.time() - start_warning_time >= 5 and time.time() - start_warning_time < 10:
 					s.send("HELP")
 					data = s.recv(1024)
-					print(data)
+					#print(data)
 					help_flag = True
 
 				elif time.time() - start_warning_time >= 10:
 					s.send("HELP2")
 					data = s.recv(1024)
-					print(data)
+					#print(data)
 		else:
 			start_warning_time = 0
 			help_flag = False
-
+		
+		print("x: ", bes_xout)
+		print("y: ", read_bes_y())
+		print("time: ", time_interval)
+		print()
 		start = end
 finally:
 	s.close()
