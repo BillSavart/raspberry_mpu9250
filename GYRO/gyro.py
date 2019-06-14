@@ -2,6 +2,7 @@ import smbus
 import time
 import math
 import socket
+from scipy import signal
 
 HOST = '192.168.68.97'
 PORT = 8888
@@ -68,6 +69,11 @@ bus.write_byte_data(address, power_mgmt_1, 0)
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.connect((HOST,PORT))
+
+#FILTER
+order = 3
+Wn = 0.003
+b,a = signal.butter(order, Wn, 'low')
 
 ####### FILE################
 record_f = open('walk.txt', 'w')
