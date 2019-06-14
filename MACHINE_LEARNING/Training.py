@@ -30,10 +30,15 @@ walk_y_data = np.zeros(walk_data_length)
 walk_y_data[:] = 0.4
 y_data = np.append(y_data, walk_y_data)
 
-Weights = tf.Variable(tf.random_uniform([1],-5.0,5.0))
+Weights = tf.Variable(tf.random_uniform([1],-1.0,1.0))
 biases = tf.Variable(tf.zeros([1]))
 
 temp_data = signal.lfilter(b, a, temp_data)
+filter_f = open('filt.txt', 'w')
+for i in temp_data:
+	c = str(i)
+	filter_f.write(c)
+	filter_f.write('\n')
 
 # at^2
 y = (abs(temp_data) * temp_time * temp_time) * Weights + biases
