@@ -52,7 +52,7 @@ init = tf.initialize_all_variables()
 sess = tf.Session()
 sess.run(init)     #Very important
 
-train_count = 10000
+train_count = 100000
 
 for step in range(train_count):
 	sess.run(train)
