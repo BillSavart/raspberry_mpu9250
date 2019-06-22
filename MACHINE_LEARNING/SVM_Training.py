@@ -1,5 +1,19 @@
 import tensorflow as tf
 
+stop_f = open('../GYRO/stop_filt.txt', 'r')
+walk_f = open('../GYRO/walk_filt.txt', 'r')
+
+stop_arr = []
+walk_arr = []
+
+lines_stop = stop_f.readlines()
+for line in lines_stop:
+	stop_arr.append(float(line.strip('\n')))
+
+lines_walk = walk_f.readlines()
+for line in lines_walk:
+	walk_arr.append(float(line.strip('\n')))
+
 #create graph and data
 sess = tf.Session()
 iris = datasets.load_iris()
