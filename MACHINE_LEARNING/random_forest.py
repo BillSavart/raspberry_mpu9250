@@ -8,6 +8,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 stop_data = np.loadtxt('test_data/stopfilt.txt')
 walk_data = np.loadtxt('test_data/walkfilt.txt')
 
+#linspace
 stop_y = np.loadtxt('test_data/stop_y.txt')
 walk_y = np.loadtxt('test_data/walk_y.txt')
 
