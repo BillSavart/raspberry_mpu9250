@@ -9,8 +9,8 @@ from structure_connect import StructureConnection
 inti_flag = -1
 connection_arr = list()
 connection_num = np.zeros(9)
-host = '192.168.68.99'
-port = 7777
+host = '192.168.68.97'
+port = 8888
  
 def accept_wrapper(sock,sel):
     global connection_arr
@@ -83,8 +83,12 @@ def drawNewSpot(image,data,index):
 
     cv2.putText(image,str(connection_arr[index].id_num+1),(connection_arr[index].position_x,connection_arr[index].position_y),cv2.FONT_HERSHEY_PLAIN,2,(255,255,255),3)
     if(data != "HELP"):
-        connection_arr[index].color_set = (0,139,0)
-        connection_arr[index].addNewPosition(data,0.05,image)
+        if(data == "No Turn" or data == "Left" or data == "Right"):
+            connection_arr[index].color_set = (0,139,0)
+            connection_arr[index].addNewPosition(data,0,image)
+        else:
+            connection_arr[index].color_set = (0,139,0)
+            connection_arr[index].addNewPosition("No Turn",float(data),image)
     cv2.putText(image,str(connection_arr[index].id_num+1),(connection_arr[index].position_x,connection_arr[index].position_y),cv2.FONT_HERSHEY_PLAIN,2,connection_arr[index].color_set,3)
 
 def helpConditionExec(message,num,image):
