@@ -79,6 +79,7 @@ b,a = signal.butter(order, Wn, 'low')
 record_f = open('walk.txt', 'w')
 time_f = open('walk_time.txt', 'w')
 count_file = 0
+
 try:
 	while True:
 		if start == 0:
@@ -97,7 +98,7 @@ try:
 		if help_flag == False:
 			s.send(turn)
 			data = s.recv(1024)
-			#print(data)
+			print(data)
 
 		#check if falling
 		bes_xout = read_bes_x()
@@ -120,12 +121,12 @@ try:
 			help_flag = False
 		
 		bes_yout = read_bes_y()
-		c = str(bes_yout)
-		record_f.write(c)
-		record_f.write("\n")
-		time_string = str(time_interval)
-		time_f.write(time_string)
-		time_f.write("\n")
+		#c = str(bes_yout)
+		#record_f.write(c)
+		#record_f.write("\n")
+		#time_string = str(time_interval)
+		#time_f.write(time_string)
+		#time_f.write("\n")
 		start = end
 finally:
 	s.close()
