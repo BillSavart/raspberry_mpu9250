@@ -1,6 +1,7 @@
 import smbus
 import time
 import math
+import numpy as np
 from scipy import signal
 
 # Register
@@ -68,13 +69,11 @@ order = 3
 Wn = 0.003
 b,a = signal.butter(order, Wn, 'low')
 
-count = 100
-
 i=1
-while i <= count:
+
+while True:
 ####### FILE################
-	record_f = open('./data/test_run'+str(i)+'.txt', 'w')
-	count_file = 0
+	bes_arr = []
 	start = 0
 	real_start = 0
 	end = 0
@@ -87,8 +86,14 @@ while i <= count:
 		time_interval = end - start
 		
 		bes_yout = read_bes_y()
-		c = str(bes_yout)
-		record_f.write(c)
-		record_f.write("\n")
+		bes_arr.append(bes_yout)
 		start = end
-	i = i + 1	
+	i = i + 1
+
+	std = np.std(bes_arr)
+	if std < 0.2 and std > 0:
+		print("stop: ", std)
+	elif std > 0.2 and std < 1.6:
+		print("walk: ", std)
+	else:
+		print("run: ", std)
