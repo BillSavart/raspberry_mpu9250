@@ -68,13 +68,12 @@ order = 3
 Wn = 0.003
 b,a = signal.butter(order, Wn, 'low')
 
-count = 5
+count = 100
 
 i=1
 while i <= count:
 ####### FILE################
 	record_f = open('./data/test_walk'+str(i)+'.txt', 'w')
-	time_f = open('./data/test_walk_time'+str(i)+'.txt', 'w')
 	count_file = 0
 	start = 0
 	real_start = 0
@@ -91,8 +90,5 @@ while i <= count:
 		c = str(bes_yout)
 		record_f.write(c)
 		record_f.write("\n")
-		time_string = str(time_interval)
-		time_f.write(time_string)
-		time_f.write("\n")
 		start = end
 	i = i + 1	
