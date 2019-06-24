@@ -2,6 +2,8 @@ import smbus
 import time
 import math
 import socket
+import numpy as np
+import threading
 from scipy import signal
 
 HOST = '192.168.68.97'
@@ -15,6 +17,8 @@ power_mgmt_2 = 0x6c
 start = 0  #for time interval
 start_warning_time = 0
 help_flag = False
+bes_arr = []
+real_bes = 0
 
 def read_byte(reg):
 	return bus.read_byte_data(address, reg)
@@ -62,6 +66,16 @@ def read_bes_y():
 	bes_y_ska = bes_y / 16384.0 * 9.8
 	return bes_y_ska
 
+def get_bes():
+	bes_arr = []
+	start_time = time.time()
+	end_time = start_time
+	while end_time - start_time <= 0.5:
+		bes_arr.append(read_bes_y())
+		end_time = time.time()
+	read_bes = np.std(bes_arr)
+
+
 #main
 bus = smbus.SMBus(1) 
 address = 0x68       # via i2cdetect
@@ -76,12 +90,11 @@ Wn = 0.003
 b,a = signal.butter(order, Wn, 'low')
 
 ####### FILE################
-record_f = open('walk.txt', 'w')
-time_f = open('walk_time.txt', 'w')
-count_file = 0
-
 try:
 	while True:
+		t = threading.Thread(target = get_bes)
+		t.start()
+
 		if start == 0:
 			start = time.time()
 
@@ -109,24 +122,31 @@ try:
 				if time.time() - start_warning_time >= 5 and time.time() - start_warning_time < 10:
 					s.send("HELP")
 					data = s.recv(1024)
-					#print(data)
+					print(data)
 					help_flag = True
 
 				elif time.time() - start_warning_time >= 10:
 					s.send("HELP2")
 					data = s.recv(1024)
-					#print(data)
+					print(data)
 		else:
 			start_warning_time = 0
 			help_flag = False
-		
-		bes_yout = read_bes_y()
-		#c = str(bes_yout)
-		#record_f.write(c)
-		#record_f.write("\n")
-		#time_string = str(time_interval)
-		#time_f.write(time_string)
-		#time_f.write("\n")
+
+		t.join()
+		if help_flag == False:
+			if real_bes < 0.2 and real_bes > 0:
+				s.send("0")
+				data = s.recv(1024)
+				print(data)
+			elif real_bes > 0.2 and real_bes < 1.6:
+				s.send("0.4")
+				data = s.recv(1024)
+				print(data)
+			else:
+				s.send("1")
+				data = s.recv(1024)
+				print(data)
 		start = end
 finally:
 	s.close()
