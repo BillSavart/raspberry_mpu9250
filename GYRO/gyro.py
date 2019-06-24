@@ -68,14 +68,18 @@ def read_bes_y():
 
 def get_bes():
 	bes_arr = []
+	global real_bes
 	start_time = time.time()
 	end_time = start_time
 	while end_time - start_time <= 0.5:
 		bes_arr.append(read_bes_y())
 		end_time = time.time()
-	read_bes = np.std(bes_arr)
+	mutex.acquire()
+	real_bes = np.std(bes_arr)
+	mutex.release()
 
 
+mutex = threading.Lock()
 #main
 bus = smbus.SMBus(1) 
 address = 0x68       # via i2cdetect
@@ -89,7 +93,6 @@ order = 3
 Wn = 0.003
 b,a = signal.butter(order, Wn, 'low')
 
-####### FILE################
 try:
 	while True:
 		t = threading.Thread(target = get_bes)
