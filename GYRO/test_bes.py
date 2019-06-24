@@ -73,7 +73,7 @@ count = 100
 i=1
 while i <= count:
 ####### FILE################
-	record_f = open('./data/test_walk'+str(i)+'.txt', 'w')
+	record_f = open('./data/test_run'+str(i)+'.txt', 'w')
 	count_file = 0
 	start = 0
 	real_start = 0
