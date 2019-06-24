@@ -76,6 +76,7 @@ while i <= count:
 	record_f = open('./data/test_walk'+str(i)+'.txt', 'w')
 	time_f = open('./data/test_walk_time'+str(i)+'.txt', 'w')
 	count_file = 0
+	start = 0
 	real_start = 0
 	end = 0
 	while end - real_start <= 0.5:
