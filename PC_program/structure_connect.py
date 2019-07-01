@@ -39,18 +39,18 @@ class StructureConnection:
                 self.dist_save = self.dist_save + dist
             else:
                 self.dist_save = 0
-            map_cm = dist_cm/320 # change the billy ruler
-            pixel_num = int(map_cm*100/1.5) # change to pixel
-        
-            if self.direction == 0:
-                self.position_y -= pixel_num 
-            elif self.direction == 90:
-                self.position_x += pixel_num
-            elif self.direction == 180:
-                self.position_y += pixel_num
-            elif self.direction == 270:
-                self.position_x -= pixel_num
-            else:
-                pass
+                map_cm = dist_cm/320 # change the billy ruler
+                pixel_num = int(map_cm*100/1.5) # change to pixel
+                print("pixel_num: "+str(pixel_num)) 
+                if self.direction == 0:
+                    self.position_y -= pixel_num 
+                elif self.direction == 90:
+                    self.position_x += pixel_num
+                elif self.direction == 180:
+                    self.position_y += pixel_num
+                elif self.direction == 270:
+                    self.position_x -= pixel_num
+                else:
+                    pass
 
 
