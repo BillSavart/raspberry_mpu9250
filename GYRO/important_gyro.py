@@ -19,7 +19,6 @@ start_warning_time = 0
 help_flag = False
 bes_arr = []
 real_bes = 0
-real_gyro = 0
 
 def read_byte(reg):
 	return bus.read_byte_data(address, reg)
@@ -42,6 +41,14 @@ def read_gyro():
 	yout = read_word_2c(0x45)
 	zout = read_word_2c(0x47)
 	return xout
+
+def turning_recognition(x,T):
+	if x >= -10000 and x <= 10000:
+		return "No Turn"
+	elif x > 10000:
+		return "Right"
+	elif x < -10000:
+		return "Left"
 
 def read_bes_x():
 	bes_x = read_word_2c(0x3b)
@@ -71,17 +78,6 @@ def get_bes():
 	real_bes = np.std(bes_arr)
 	mutex.release()
 
-def check_turning():
-	gyro_arr = []
-	global real_gyro
-	start_time = time.time()
-	end_time = start_time
-	while end_time - start_time <= 0.25:
-		gyro_arr.append((read_gyro() * 250) / 131)
-		end_time = time.time()
-	mutex.acquire()
-	real_gyro = np.max(gyro_arr)
-	mutex.release()
 
 mutex = threading.Lock()
 #main
@@ -100,16 +96,25 @@ b,a = signal.butter(order, Wn, 'low')
 try:
 	while True:
 		t = threading.Thread(target = get_bes)
-		t1 = threading.Thread(target = check_turning)
 		t.start()
-		t1.start()
 
-	#	if start == 0:
-	#		start = time.time()
+		if start == 0:
+			start = time.time()
 
-	#	end = time.time()
-		
+		end = time.time()
+		time_interval = end - start
+
+		gyro_xout = read_gyro() #read information from gyro
+		x_out = (gyro_xout * 250 * time_interval) / 131		
+
+		#check if turning or not
+		turn = turning_recognition(x_out,time_interval)
+
 		#socket
+		if help_flag == False:
+			s.send(turn)
+			data = s.recv(1024)
+			print(data)
 
 		#check if falling
 		bes_xout = read_bes_x()
@@ -132,25 +137,6 @@ try:
 			help_flag = False
 
 		t.join()
-		t1.join()
-
-		if help_flag == False:
-			print('real_gyro:' , real_gyro)
-			if real_gyro < 10000 and real_gyro > -10000:
-				s.send("No Turn")
-				data = s.recv(1024)
-				print(data)
-			elif real_gyro > 10000:
-				s.send("Right")
-				data = s.recv(1024)
-				print(data)
-			elif real_gyro < -10000:
-				s.send("Left")
-				data = s.recv(1024)
-				print(data)
-			else:
-				pass
-
 		if help_flag == False:
 			if real_bes < 0.2 and real_bes > 0:
 				s.send("0")
@@ -164,7 +150,7 @@ try:
 				s.send("1")
 				data = s.recv(1024)
 				print(data)
-	#	start = end
+		start = end
 finally:
 	s.close()
 	print "close"
