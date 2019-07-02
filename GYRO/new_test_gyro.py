@@ -46,7 +46,7 @@ while count <= 100:
 	if start == 0:
 		start = time.time()
 
-	while end - start < 0.5:
+	while end - start < 1.5:
 		gyro_xout = read_gyro() #read information from gyro
 		x_out = (gyro_xout * 250) / 131	
 
