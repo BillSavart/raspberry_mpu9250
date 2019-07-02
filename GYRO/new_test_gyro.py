@@ -38,9 +38,10 @@ bus.write_byte_data(address, power_mgmt_1, 0)
 count = 1
 
 while count <= 100:
+	print('count: ', count)
 	end = 0
 	start = 0
-	turn_file = open('./turning_data/no_turn' + str(count) + '.txt', 'w')
+	turn_file = open('./turning_data/left_turn' + str(count) + '.txt', 'w')
 
 	if start == 0:
 		start = time.time()
