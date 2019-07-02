@@ -6,7 +6,7 @@ import numpy as np
 import threading
 from scipy import signal
 
-HOST = '192.168.68.97'
+HOST = '192.168.208.132'
 PORT = 8888
 
 # Register
@@ -71,7 +71,7 @@ def get_bes():
 	global real_bes
 	start_time = time.time()
 	end_time = start_time
-	while end_time - start_time <= 0.5:
+	while end_time - start_time <= 0.75:
 		bes_arr.append(read_bes_y())
 		end_time = time.time()
 	mutex.acquire()
