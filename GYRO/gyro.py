@@ -66,48 +66,48 @@ def get_bes():
 		bes_arr = []
 		global real_bes
 		global distance
-		global help_flag
 		start_time = time.time()
 		end_time = start_time
 		while end_time - start_time <= 0.75:
 			bes_arr.append(read_bes_y())
 			end_time = time.time()
 		real_bes = np.std(bes_arr)
-		mutex.acquire()
-		if help_flag == False:
-			if real_bes < 0.2 and real_bes > 0:
-				pass
-			elif real_bes > 0.2 and real_bes < 1.6:
-				distance = distance + 0.4
-			else:
-				distance = distance + 1
-		mutex.release()
+		if real_bes < 0.2 and real_bes > 0:
+			pass
+		elif real_bes > 0.2 and real_bes < 1.6:
+			mutex.acquire()
+			distance = distance + 0.4
+			mutex.release()
+		else:
+			mutex.acquire()
+			distance = distance + 1
+			mutex.release()
 	
 def check_turning():
 	while True:
 		gyro_arr = []
 		global turn
 		global real_gyro
-		global help_flag
 		start_time = time.time()
 		end_time = start_time
 		while end_time - start_time <= 0.5:
-			print("check")
+			#print("check")
 			gyro_arr.append((read_gyro() * 250) / 131)
 			end_time = time.time()
 		real_gyro = np.median(gyro_arr)
-		mutex.acquire()
-		if help_flag == False:
-			print('real_gyro:' , real_gyro)
-			if real_gyro < 2000 and real_gyro > 2000:
-				pass
-			elif real_gyro > 10000:
-				turn = turn + 1
-			elif real_gyro < -10000:
-				turn = turn - 1
-			else:
-				pass
-		mutex.release()
+		print('real_gyro:' , real_gyro)
+		if real_gyro < 2000 and real_gyro > 2000:
+			pass
+		elif real_gyro > 10000:
+			mutex.acquire()
+			turn = turn + 1
+			mutex.release()
+		elif real_gyro < -10000:
+			mutex.acquire()
+			turn = turn - 1
+			mutex.release()
+		else:
+			pass
 
 mutex = threading.Lock()
 
@@ -141,9 +141,7 @@ try:
 					s.send("HELP")
 					data = s.recv(1024)
 					print(data)
-					mutex.acquire()
 					help_flag = True
-					mutex.release()
 
 				elif time.time() - start_warning_time >= 10:
 					s.send("HELP2")
@@ -151,9 +149,7 @@ try:
 					print(data)
 		else:
 			start_warning_time = 0
-			mutex.acquire()
 			help_flag = False
-			mutex.release()
 
 		#send bes
 		mutex.acquire()
@@ -161,8 +157,7 @@ try:
 			s.send(str(distance))
 			data = s.recv(1024)
 			print(data)
-			distance = 0
-			mutex.release()
+		mutex.release()
 
 		#send turning
 		mutex.acquire()
@@ -187,9 +182,11 @@ try:
 				s.send("Left")
 				data = s.recv(1024)
 				print(data)
-			turn = 0
-			mutex.release()
-		
+		mutex.release()
+		mutex.acquire()
+		distance = 0
+		turn = 0
+		mutex.release()
 finally:
 	t.join()
 	t1.join()
