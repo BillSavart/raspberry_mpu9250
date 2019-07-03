@@ -35,11 +35,11 @@ class StructureConnection:
             print(self.direction)
             dist = dist + self.dist_save # avoid error
             dist_cm = dist*100 # change meter to centimeter
-            if dist_cm < 320:
+            if dist_cm < 180:
                 self.dist_save = self.dist_save + dist
             else:
                 self.dist_save = 0
-                map_cm = dist_cm/320 # change the billy ruler
+                map_cm = dist_cm/180 # change the billy ruler
                 pixel_num = int(map_cm*100/1.5) # change to pixel
                 print("pixel_num: "+str(pixel_num)) 
                 if self.direction == 0:
