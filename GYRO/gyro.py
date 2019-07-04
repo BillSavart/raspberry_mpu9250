@@ -70,20 +70,20 @@ def get_bes():
 		bes_arr = []
 		start_time = time.time()
 		end_time = start_time
-		while end_time - start_time <= 0.75:
+		while end_time - start_time <= 0.5:
 			bes_arr.append(read_bes_y())
 			end_time = time.time()
 		real_bes = np.std(bes_arr)
-		#if real_bes < 0.2 and real_bes > 0:
-	#		pass
-	#	elif real_bes > 0.2 and real_bes < 1.6:
-	#		mutex.acquire()
-	#		distance = distance + 0.4
-	#		mutex.release()
-	#	else:
-	#		mutex.acquire()
-	#		distance = distance + 1
-	#		mutex.release()
+		if real_bes < 0.2 and real_bes > 0:
+			pass
+		elif real_bes > 0.2 and real_bes < 1.6:
+			mutex.acquire()
+			distance = distance + 0.4
+			mutex.release()
+		else:
+			mutex.acquire()
+			distance = distance + 1
+			mutex.release()
 		if stop_key == True:
 			break
 	
@@ -99,18 +99,18 @@ def check_turning():
 			gyro_arr.append((read_gyro() * 250) / 131)
 			end_time = time.time()
 		real_gyro = np.median(gyro_arr)
-	#	if real_gyro < 2000 and real_gyro > 2000:
-	#		pass
-	#	elif real_gyro > 10000:
-	#		mutex.acquire()
-	#		turn = turn + 1
-	#		mutex.release()
-	#	elif real_gyro < -10000:
-	#		mutex.acquire()
-	#		turn = turn - 1
-	#		mutex.release()
-	#	else:
-	#		pass
+		if real_gyro < 2000 and real_gyro > 2000:
+			pass
+		elif real_gyro > 10000:
+			mutex.acquire()
+			turn = turn + 1
+			mutex.release()
+		elif real_gyro < -10000:
+			mutex.acquire()
+			turn = turn - 1
+			mutex.release()
+		else:
+			pass
 		if stop_key == True:
 			break
 
