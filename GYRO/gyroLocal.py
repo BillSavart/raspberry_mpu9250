@@ -74,6 +74,8 @@ def get_bes():
 		else:
 			distance = distance + 1
 		mutex.release()
+		if stop_key == True:
+			break
 	
 def check_turning():
 	global turn
@@ -97,6 +99,8 @@ def check_turning():
 		else:
 			pass
 		mutex.release()
+		if stop_key == True:
+			break
 
 mutex = threading.Lock()
 
@@ -156,6 +160,7 @@ try:
 		
 		
 finally:
+	stop_key = True
 	t.join()
 	t1.join()
 	print "close"
