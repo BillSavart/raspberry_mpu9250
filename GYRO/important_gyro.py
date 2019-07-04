@@ -71,6 +71,7 @@ def get_bes():
 	global real_bes
 	start_time = time.time()
 	end_time = start_time
+	print("check")
 	while end_time - start_time <= 0.75:
 		bes_arr.append(read_bes_y())
 		end_time = time.time()

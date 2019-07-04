@@ -17,12 +17,8 @@ power_mgmt_2 = 0x6c
 start = 0  #for time interval
 start_warning_time = 0
 help_flag = False
-bes_arr = []
 real_bes = 0
 real_gyro = 0
-distance = 0
-turn = 0
-stop_key = False
 
 def read_byte(reg):
 	return bus.read_byte_data(address, reg)
@@ -63,57 +59,20 @@ def read_bes_y():
 	return bes_y_ska
 
 def get_bes():
-	global real_bes
-	global distance
-	global stop_key
 	while True:
-		bes_arr = []
-		start_time = time.time()
-		end_time = start_time
-		while end_time - start_time <= 0.75:
-			bes_arr.append(read_bes_y())
-			end_time = time.time()
-		real_bes = np.std(bes_arr)
-		if real_bes < 0.2 and real_bes > 0:
-			pass
-		elif real_bes > 0.2 and real_bes < 1.6:
-			mutex.acquire()
-			distance = distance + 0.4
-			mutex.release()
-		else:
-			mutex.acquire()
-			distance = distance + 1
-			mutex.release()
-		if stop_key == True:
-			break
-	
+		global real_bes
+		mutex.acquire()
+		real_bes = read_bes_y()
+		print('real_bes:' , real_bes)
+		mutex.release()
+
 def check_turning():
-	global turn
-	global real_gyro
-	global stop_key
 	while True:
-		gyro_arr = []
-		start_time = time.time()
-		end_time = start_time
-		while end_time - start_time <= 0.5:
-			gyro_arr.append((read_gyro() * 250) / 131)
-			end_time = time.time()
-		real_gyro = np.median(gyro_arr)
+		global real_gyro
+		mutex.acquire()
+		real_gyro = ((read_gyro() * 250) / 131)
 		print('real_gyro:' , real_gyro)
-		if real_gyro < 2000 and real_gyro > 2000:
-			pass
-		elif real_gyro > 10000:
-			mutex.acquire()
-			turn = turn + 1
-			mutex.release()
-		elif real_gyro < -10000:
-			mutex.acquire()
-			turn = turn - 1
-			mutex.release()
-		else:
-			pass
-		if stop_key == True:
-			break
+		mutex.release()
 
 mutex = threading.Lock()
 
@@ -159,42 +118,18 @@ try:
 
 		#send bes
 		mutex.acquire()
-		if help_flag == False:
-			s.send(str(distance))
-			data = s.recv(1024)
-			print(data)
+		s.send("b" + str(real_bes))
+		data = s.recv(1024)
+		print(data)
 		mutex.release()
 
 		#send turning
 		mutex.acquire()
-		if help_flag == False:
-			turn = turn % 4
-			if turn == 0:
-				s.send("No Turn")
-				data = s.recv(1024)
-				print(data)
-			elif turn == 1:
-				s.send("Right")
-				data= s.recv(1024)
-				print(data)
-			elif turn == 2:
-				s.send("Right")
-				data = s.recv(1024)
-				print(data)
-				s.send("Right")
-				data = s.recv(1024)
-				print(data)
-			else:
-				s.send("Left")
-				data = s.recv(1024)
-				print(data)
-		mutex.release()
-		mutex.acquire()
-		distance = 0
-		turn = 0
+		s.send("g" + str(real_gyro))
+		data = s.recv(1024)
+		print(data)
 		mutex.release()
 finally:
-	stop_key = True
 	t.join()
 	t1.join()
 	s.close()
