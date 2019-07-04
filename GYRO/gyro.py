@@ -99,7 +99,6 @@ def check_turning():
 			gyro_arr.append((read_gyro() * 250) / 131)
 			end_time = time.time()
 		real_gyro = np.median(gyro_arr)
-		print('real_gyro:' , real_gyro)
 		if real_gyro < 2000 and real_gyro > 2000:
 			pass
 		elif real_gyro > 10000:
@@ -124,11 +123,6 @@ bus.write_byte_data(address, power_mgmt_1, 0)
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.connect((HOST,PORT))
-
-#FILTER
-order = 3
-Wn = 0.003
-b,a = signal.butter(order, Wn, 'low')
 
 t = threading.Thread(target = get_bes)
 t1 = threading.Thread(target = check_turning)
@@ -198,4 +192,4 @@ finally:
 	t.join()
 	t1.join()
 	s.close()
-	print "close"
+	print("close")
