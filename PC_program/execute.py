@@ -10,7 +10,7 @@ inti_flag = -1
 connection_arr = list()
 connection_num = np.zeros(9)
 host = '192.168.68.97'
-port = 7777
+port = 8888
  
 def accept_wrapper(sock,sel):
     global connection_arr

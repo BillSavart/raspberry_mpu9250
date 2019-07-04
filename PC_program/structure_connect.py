@@ -8,6 +8,8 @@ class StructureConnection:
     position_y = 0 # 裝置在Map的位置(y)
     direction = -1 # 裝置方向
     dist_save = 0 # 距離暫存
+    bes_data_list = []
+    gyro_list = []
   
     def __init__(self,num,ip_position): # Constructor
         self.color_set = (0,255,0)

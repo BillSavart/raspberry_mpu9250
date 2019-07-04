@@ -6,29 +6,31 @@ import selectors
 import types
 from structure_connect import StructureConnection
 
-inti_flag = False
-position_x = 0
-position_y = 0
-direction = -1
-dist_save = 0
+inti_flag = -1
 connection_arr = list()
 connection_num = np.zeros(9)
-host = '192.168.68.98'
-port = 7777
+host = '192.168.68.97'
+port = 8888
  
 def accept_wrapper(sock,sel):
     global connection_arr
     global connection_num
+    global inti_flag
+
     conn, addr = sock.accept()  # Should be ready to read
     print('accepted connection from', addr)
-    i = 1
+#--------------------------------------------------------------------#
+    i = 0
     while(i<10):
         if(connection_num[i] == 0):
-            connection_arr.append(StructureConnection(i,str(addr[0])))
+            connection_arr[i] = StructureConnection(i,str(addr[0]))
             connection_num[i] = 1
+            inti_flag = i
             break
         i = i + 1
     # add new connection
+    # 創造一個新的Object給Device
+#--------------------------------------------------------------------#
     conn.setblocking(False)
     data = types.SimpleNamespace(addr=addr, inb=b'', outb=b'')
     events = selectors.EVENT_READ | selectors.EVENT_WRITE
@@ -36,6 +38,7 @@ def accept_wrapper(sock,sel):
 
 def service_connection(key, mask,sel,image):
     global connection_arr
+    global connection_num
     sock = key.fileobj
     data = key.data
     if mask & selectors.EVENT_READ:
@@ -44,120 +47,96 @@ def service_connection(key, mask,sel,image):
             data.outb += recv_data
         else:
             print('closing connection to', data.addr)
+#-------------------------------------------------------------------#
             print(str(data.addr[0]))
             print(connection_arr[0].ip_addr)
-            if(str(data.addr[0]) == connection_arr[0].ip_addr):
-                print("Yes")
- #           for i in connection_arr:
- #               if(i.ip_addr == str(data.addr[0])):
- #                   print("Yes")
- #                   break
+            for i in connection_arr:
+                if(i.ip_addr == str(data.addr[0])):
+                    connection_num[i] = 0
+
+            # Close Connection 的時候取消 Object
+#--------------------------------------------------------------------#
             sel.unregister(sock)
             sock.close()
     if mask & selectors.EVENT_WRITE:
         if data.outb:
             print('echoing', repr(data.outb), 'to', data.addr)
-            drawNewSpot(image,data.outb.decode())
+#------------------------------------------------------------------#
+            for i in connection_arr:
+                if(i.ip_addr == str(data.addr[0])):
+                    if(data.outb.decode() == "HELP"):
+                        helpConditionExec("HELP",i.id_num,image)
+                    elif(data.outb.decode() == "HELP2"):
+                        helpConditionExec("HELP2",i.id_num,image)
+                    else:
+                        drawNewSpot(image,data.outb.decode(),i.id_num)
+                    
+                    break
+            # Device 傳輸資料時, call 對應function
+#--------------------------------------------------------------------#
             sent = sock.send(data.outb)  # Should be ready to write
             data.outb = data.outb[sent:]
     
+ #######    # running handling
+def drawNewSpot(image,data,index):
+    global connection_arr
 
-def positionInitiate(event,x,y,flags,param):
-    global position_x
-    global position_y
+    cv2.putText(image,str(connection_arr[index].id_num+1),(connection_arr[index].position_x,connection_arr[index].position_y),cv2.FONT_HERSHEY_PLAIN,2,(255,255,255),3)
+    if(data != "HELP"):
+        if(data == "No Turn" or data == "Left" or data == "Right"):
+            connection_arr[index].color_set = (0,139,0)
+            connection_arr[index].addNewPosition(data,0,image)
+        else:
+            connection_arr[index].color_set = (0,139,0)
+            connection_arr[index].addNewPosition("No Turn",float(data),image)
+    cv2.putText(image,str(connection_arr[index].id_num+1),(connection_arr[index].position_x,connection_arr[index].position_y),cv2.FONT_HERSHEY_PLAIN,2,connection_arr[index].color_set,3)
+
+def helpConditionExec(message,num,image):
+    if(message == "HELP"):
+        connection_arr[num].color_set = (0,165,255)
+    elif (message == "HELP2"):
+        connection_arr[num].color_set = (0,0,255) 
+    else:
+       pass
+    drawNewSpot(image,"HELP",num)
+
+def addNewPoint(event,x,y,flags,param):
     global inti_flag
-    global direction
+    global connection_arr
 
-    if  event == cv2.EVENT_LBUTTONDOWN and (direction == -1 or inti_flag == False):    
-        if inti_flag == False:
-            position_x = x
-            position_y = y
-            print ("x: ",x)
-            print ("y: ",y)
-            inti_flag = True
+    if inti_flag != -1 and event == cv2.EVENT_LBUTTONDOWN:
+        if connection_arr[inti_flag].position_x == 0 and connection_arr[inti_flag].position_y == 0:
+            connection_arr[inti_flag].position_x = x
+            connection_arr[inti_flag].position_y = y 
         else:
             temp_x = x
             temp_y = y
-            if abs(temp_x-position_x) > abs(temp_y - position_y):
-                if temp_x < position_x:
-                    direction = 270
+            if abs(temp_x-connection_arr[inti_flag].position_x) > abs(temp_y - connection_arr[inti_flag].position_y):
+                if temp_x < connection_arr[inti_flag].position_x:
+                    connection_arr[inti_flag].direction = 270
                 else:
-                    direction = 90
+                    connection_arr[inti_flag].direction = 90
             else:
-                if temp_y > position_y:
-                    direction = 180
+                if temp_y > connection_arr[inti_flag].position_y:
+                    connection_arr[inti_flag].direction = 180
                 else:
-                    direction = 0
-            print ("dir: ",direction)
-
-def addNewPosition(direct,dist,image):
-    global inti_flag
-    global direction
-    global position_x
-    global position_y
-    global dist_save
-
-    if inti_flag == True:
-# change direction        
-        if direct == "Right":
-            dist_save = 0
-            direction += 90
-            if direction >= 360:
-                direction -= 360
-        elif direct == "Left":
-            dist_save = 0
-            direction -= 90
-            if direction < 0:
-                direction += 360
-        elif direct == "No Turn" or direct == "":
-            pass #no direction changes
-        else:
-            print(direct)
-
-#change distance
-
-        print(direction)
-        dist = dist + dist_save # avoid error
-        dist_cm = dist*100 # change meter to centimeter
-        if dist_cm < 320:
-            dist_save = dist_save + dist
-        else:
-            dist_save = 0
-        map_cm = dist_cm/320 # change the billy ruler
-        pixel_num = int(map_cm*100/1.5) # change to pixel
-        
-        if direction == 0:
-            position_y -= pixel_num
-        elif direction == 90:
-            position_x += pixel_num
-        elif direction == 180:
-            position_y += pixel_num
-        elif direction == 270:
-            position_x -= pixel_num
-        else:
-            pass
-
- #######    # running handling
-def drawNewSpot(image,data):
-    global position_x
-    global position_y
-    global connection_arr
-
-    cv2.putText(image,str(connection_arr[0].id_num),(position_x,position_y),cv2.FONT_HERSHEY_PLAIN,1,(255,255,255),2)
-    addNewPosition(data,0.1,image)
-    cv2.putText(image,str(connection_arr[0].id_num),(position_x,position_y),cv2.FONT_HERSHEY_PLAIN,1,connection_arr[0].color_set,2)
-
+                    connection_arr[inti_flag].direction = 0
+            print ("dir: ",connection_arr[inti_flag].direction)
+            inti_flag = -1
 
 def main():
-    global position_x
-    global position_y
     global connection_arr
 
+    i = 0
+    while(i<10):
+        connection_arr.append(StructureConnection(0,"0"))
+        i = i + 1
+
     image = cv2.imread("../IMAGE/image_draw.JPG")
-    cv2.namedWindow("Image")
-    cv2.setMouseCallback('Image',positionInitiate)
+    cv2.namedWindow("Image",0)
+    cv2.setWindowProperty("Image",cv2.WND_PROP_FULLSCREEN,cv2.WINDOW_FULLSCREEN )
+    cv2.setMouseCallback("Image",addNewPoint)
     cv2.imshow("Image",image)
-    cv2.waitKey(0)
 
     try:
         sel = selectors.DefaultSelector()
@@ -175,9 +154,13 @@ def main():
                     accept_wrapper(key.fileobj,sel)
                 else:
                     service_connection(key, mask,sel,image)    
+#-------------------------------------------------------------#
+# to show image 
             cv2.imshow("Image",image)
             if cv2.waitKey(500) & 0xFF == ord('q'):
                 break
+            # Show 我們的圖
+#-----------------------------------------------------------------#
     finally:
         lsock.close()
         print("close socket")
