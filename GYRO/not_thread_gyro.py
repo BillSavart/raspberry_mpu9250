@@ -7,7 +7,7 @@ import threading
 from scipy import signal
 
 HOST = '192.168.68.97'
-PORT = 7777
+PORT = 8888
 
 # Register
 power_mgmt_1 = 0x6b
@@ -94,8 +94,11 @@ order = 3
 Wn = 0.003
 b,a = signal.butter(order, Wn, 'low')
 
+count = 0
+
 try:
 	while True:
+		print("count: ", count)
 		t = threading.Thread(target = get_bes)
 		t.start()
 
@@ -152,6 +155,7 @@ try:
 				data = s.recv(1024)
 				print(data)
 		start = end
+		count = count + 1
 finally:
 	s.close()
 	print "close"

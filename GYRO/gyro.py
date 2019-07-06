@@ -4,10 +4,9 @@ import math
 import socket
 import numpy as np
 import threading
-from scipy import signal
 
 HOST = '192.168.68.97'
-PORT = 8787
+PORT = 8888
 
 # Register
 power_mgmt_1 = 0x6b
@@ -17,7 +16,6 @@ power_mgmt_2 = 0x6c
 start = 0  #for time interval
 start_warning_time = 0
 help_flag = False
-bes_arr = []
 real_bes = 0
 real_gyro = 0
 distance = 0
@@ -66,24 +64,24 @@ def get_bes():
 	global real_bes
 	global distance
 	global stop_key
+	global mutex
+	bes_arr = []
 	while True:
-		bes_arr = []
-		start_time = time.time()
-		end_time = start_time
-		while end_time - start_time <= 0.5:
-			bes_arr.append(read_bes_y())
-			end_time = time.time()
-		real_bes = np.std(bes_arr)
-		if real_bes < 0.2 and real_bes > 0:
-			pass
-		elif real_bes > 0.2 and real_bes < 1.6:
-			mutex.acquire()
-			distance = distance + 0.4
-			mutex.release()
-		else:
-			mutex.acquire()
-			distance = distance + 1
-			mutex.release()
+		bes_arr.append(read_bes_y())
+		if len(bes_arr) >= 500:
+			real_bes = np.std(bes_arr)
+			if real_bes < 0.2 and real_bes > 0:
+				pass
+			elif real_bes > 0.2 and real_bes < 1.6:
+				mutex.acquire()
+				distance = distance + 0.4
+				mutex.release()
+			else:
+				mutex.acquire()
+				distance = distance + 1
+				mutex.release()
+			bes_arr = []
+			print(threading.current_thread())
 		if stop_key == True:
 			break
 	
@@ -91,29 +89,31 @@ def check_turning():
 	global turn
 	global real_gyro
 	global stop_key
+	global mutex
+	gyro_arr = []
+	
 	while True:
-		gyro_arr = []
-		start_time = time.time()
-		end_time = start_time
-		while end_time - start_time <= 0.5:
-			gyro_arr.append((read_gyro() * 250) / 131)
-			end_time = time.time()
-		real_gyro = np.median(gyro_arr)
-		if real_gyro < 2000 and real_gyro > 2000:
-			pass
-		elif real_gyro > 10000:
-			mutex.acquire()
-			turn = turn + 1
-			mutex.release()
-		elif real_gyro < -10000:
-			mutex.acquire()
-			turn = turn - 1
-			mutex.release()
-		else:
-			pass
+		gyro_arr.append((read_gyro() * 250) / 131)
+		#print("gyro_arr: ", gyro_arr)
+		if len(gyro_arr) >= 500:
+			real_gyro = np.median(gyro_arr)
+			print(real_gyro)
+			if real_gyro < 2000 and real_gyro > 2000:
+				pass
+			elif real_gyro > 10000:
+				mutex.acquire()
+				turn = turn + 1
+				mutex.release()
+			elif real_gyro < -10000:
+				mutex.acquire()
+				turn = turn - 1
+				mutex.release()
+			else:
+				pass
+			gyro_arr = []
+			print(threading.current_thread())
 		if stop_key == True:
 			break
-
 mutex = threading.Lock()
 
 #main
@@ -123,7 +123,6 @@ bus.write_byte_data(address, power_mgmt_1, 0)
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.connect((HOST,PORT))
-
 t = threading.Thread(target = get_bes)
 t1 = threading.Thread(target = check_turning)
 t.start()
@@ -140,23 +139,24 @@ try:
 				if time.time() - start_warning_time >= 5 and time.time() - start_warning_time < 10:
 					s.send("HELP")
 					data = s.recv(1024)
-					print(data)
+					#print(data)
 					help_flag = True
 
 				elif time.time() - start_warning_time >= 10:
 					s.send("HELP2")
 					data = s.recv(1024)
-					print(data)
+					#print(data)
 		else:
 			start_warning_time = 0
 			help_flag = False
 
 		#send bes
 		mutex.acquire()
-		if help_flag == False:
+		if help_flag == False and distance != 0:
 			s.send(str(distance))
 			data = s.recv(1024)
-			print(data)
+			#print(data)
+			distance = 0
 		mutex.release()
 
 		#send turning
@@ -166,30 +166,26 @@ try:
 			if turn == 0:
 				s.send("No Turn")
 				data = s.recv(1024)
-				print(data)
+				#print(data)
 			elif turn == 1:
 				s.send("Right")
-				data= s.recv(1024)
-				print(data)
+				data = s.recv(1024)
+				#print(data)
 			elif turn == 2:
 				s.send("Right")
 				data = s.recv(1024)
-				print(data)
+				#print(data)
 				s.send("Right")
 				data = s.recv(1024)
-				print(data)
+				#print(data)
 			else:
 				s.send("Left")
 				data = s.recv(1024)
-				print(data)
+				#print(data)
+			turn = 0
 		mutex.release()
-		mutex.acquire()
-		distance = 0
-		turn = 0
-		mutex.release()
+		print(threading.current_thread())
 finally:
 	stop_key = True
-	t.join()
-	t1.join()
 	s.close()
 	print("close")
