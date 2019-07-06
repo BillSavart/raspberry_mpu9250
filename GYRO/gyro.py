@@ -65,10 +65,12 @@ def get_bes():
 	global distance
 	global stop_key
 	global mutex
+	global s
 	bes_arr = []
+
 	while True:
 		bes_arr.append(read_bes_y())
-		if len(bes_arr) >= 500:
+		if len(bes_arr) >= 100:
 			real_bes = np.std(bes_arr)
 			if real_bes < 0.2 and real_bes > 0:
 				pass
@@ -81,7 +83,7 @@ def get_bes():
 				distance = distance + 1
 				mutex.release()
 			bes_arr = []
-			print(threading.current_thread())
+			#print(threading.current_thread())
 		if stop_key == True:
 			break
 	
@@ -90,16 +92,17 @@ def check_turning():
 	global real_gyro
 	global stop_key
 	global mutex
+	global s
 	gyro_arr = []
 	
 	while True:
 		gyro_arr.append((read_gyro() * 250) / 131)
-		#print("gyro_arr: ", gyro_arr)
-		if len(gyro_arr) >= 500:
+		if len(gyro_arr) >= 100:
 			real_gyro = np.median(gyro_arr)
-			print(real_gyro)
 			if real_gyro < 2000 and real_gyro > 2000:
-				pass
+				mutex.acquire()
+				turn = 0
+				mutex.release()
 			elif real_gyro > 10000:
 				mutex.acquire()
 				turn = turn + 1
@@ -110,8 +113,9 @@ def check_turning():
 				mutex.release()
 			else:
 				pass
+			turn = 0
 			gyro_arr = []
-			print(threading.current_thread())
+			#print(threading.current_thread())
 		if stop_key == True:
 			break
 mutex = threading.Lock()
@@ -139,52 +143,52 @@ try:
 				if time.time() - start_warning_time >= 5 and time.time() - start_warning_time < 10:
 					s.send("HELP")
 					data = s.recv(1024)
-					#print(data)
+					print(data)
 					help_flag = True
 
 				elif time.time() - start_warning_time >= 10:
 					s.send("HELP2")
 					data = s.recv(1024)
-					#print(data)
+					print(data)
 		else:
 			start_warning_time = 0
 			help_flag = False
 
 		#send bes
-		mutex.acquire()
+		#mutex.acquire()
 		if help_flag == False and distance != 0:
 			s.send(str(distance))
 			data = s.recv(1024)
-			#print(data)
+			print(data)
 			distance = 0
-		mutex.release()
+		#mutex.release()
 
 		#send turning
-		mutex.acquire()
+		#mutex.acquire()
 		if help_flag == False:
 			turn = turn % 4
 			if turn == 0:
 				s.send("No Turn")
 				data = s.recv(1024)
-				#print(data)
+				print(data)
 			elif turn == 1:
 				s.send("Right")
 				data = s.recv(1024)
-				#print(data)
+				print(data)
 			elif turn == 2:
 				s.send("Right")
 				data = s.recv(1024)
-				#print(data)
+				print(data)
 				s.send("Right")
 				data = s.recv(1024)
-				#print(data)
+				print(data)
 			else:
 				s.send("Left")
 				data = s.recv(1024)
-				#print(data)
+				print(data)
 			turn = 0
-		mutex.release()
-		print(threading.current_thread())
+		#mutex.release()
+		#print(threading.current_thread())
 finally:
 	stop_key = True
 	s.close()
