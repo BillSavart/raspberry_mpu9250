@@ -68,10 +68,10 @@ while True:
 	bes_y_ska = bes_y / 16384.0 * 9.8
 	bes_z_ska = bes_z / 16384.0 * 9.8
 
-	print "x:", bes_x_ska
-	print "y:", bes_y_ska
-	print "z:", bes_z_ska
-	print
+	#print "x:", bes_x_ska
+	#print "y:", bes_y_ska
+	#print "z:", bes_z_ska
+	#print
 
     #time_total  = time_total + time_temp
     #time_f.write(str(time_total))
@@ -80,7 +80,7 @@ while True:
     if len(bes_arr) == sample_num:
         lfilt = signal.lfilter(b, a, bes_arr)
         lfilt = signal.lfilter(b, a, lfilt)
-        if max(lfilt) < max_num and min(lfilt) > min_num:
+       # if max(lfilt) < max_num and min(lfilt) > min_num:
             pass
         else:
             i = 1

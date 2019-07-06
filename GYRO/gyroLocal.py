@@ -16,6 +16,7 @@ start_warning_time = 0
 help_flag = False
 distance = 0
 turn = 0
+stop_key = False
 
 def read_byte(reg):
 	return bus.read_byte_data(address, reg)
@@ -58,15 +59,21 @@ def read_bes_y():
 def get_bes():
 	global distance
 	global help_flag
+	global stop_key
 	while True:
+		#print(threading.current_thread())
 		bes_arr = []
 		start_time = time.time()
 		end_time = start_time
-		while end_time - start_time <= 0.75:
+		while end_time - start_time <= 0.5:
+			#print("bes")
+			#print(end_time - start_time)
+			#print(threading.current_thread())
 			bes_arr.append(read_bes_y())
 			end_time = time.time()
 		real_bes = np.std(bes_arr)
 		mutex.acquire()
+		#print(end_time - start_time)
 		if real_bes < 0.2 and real_bes > 0:
 			pass
 		elif real_bes > 0.2 and real_bes < 1.6:
@@ -80,15 +87,19 @@ def get_bes():
 def check_turning():
 	global turn
 	global help_flag
+	global stop_key
 	while True:
+		#print(threading.current_thread())
 		gyro_arr =[]
 		start_time = time.time()
 		end_time = start_time
 		while end_time - start_time <= 0.5:
+			#print("gyro")
+			#print(threading.current_thread())
 			gyro_arr.append((read_gyro() * 250) / 131)
 			end_time = time.time()
 		real_gyro = np.median(gyro_arr)
-		print('real_gyro:' , real_gyro)
+		#print('real_gyro:' , real_gyro)
 		mutex.acquire()
 		if real_gyro < 2000 and real_gyro > 2000:
 			pass
@@ -114,20 +125,25 @@ t1 = threading.Thread(target = check_turning)
 t.start()
 t1.start()
 
+test_count = 0
+
 try:
 	while True:
 		#check if falling
+		#print(threading.current_thread())
+		#print("count: ", test_count)
 		bes_xout = read_bes_x()
 		if bes_xout > -9:
 			if start_warning_time == 0:
 				start_warning_time = time.time()
 			else:
 				if time.time() - start_warning_time >= 5 and time.time() - start_warning_time < 10:
-					print("HELP")
+					#print("HELP")
 					help_flag = True
 
 				elif time.time() - start_warning_time >= 10:
-					print("HELP2")
+					#print("HELP2")
+					pass
 		else:
 			start_warning_time = 0
 			help_flag = False
@@ -135,7 +151,9 @@ try:
 		#send bes
 		mutex.acquire()
 		if help_flag == False:
-			print(distance)
+			#print(distance)
+			pass
+		distance = 0
 		mutex.release()
 
 		#send turning
@@ -143,24 +161,23 @@ try:
 		if help_flag == False:
 			turn = turn % 4
 			if turn == 0:
-				print("No Turn")
+				pass
+				#print("No Turn")
 			elif turn == 1:
-				print("Right")
+				pass
+				#print("Right")
 			elif turn == 2:
-				print("Right")
-				print("Right")
+				pass
+				#print("Right")
+				#print("Right")
 			else:
-				print("Left")
-		mutex.release()
-
-		mutex.acquire()
-		distance = 0
+				pass
+				#print("Left")
 		turn = 0
 		mutex.release()
-		
-		
+		test_count = test_count + 1
 finally:
 	stop_key = True
 	t.join()
 	t1.join()
-	print "close"
+	print("close")
