@@ -1,7 +1,7 @@
 import smbus
 import math
 import time
-from scipy import signal
+#from scipy import signal
 
 # Register
 power_mgmt_1 = 0x6b
@@ -42,9 +42,9 @@ max_num = 0.2
 sample_num = 500
 
 # low pass filter 
-order = 3
-Wn = 0.003
-b,a = signal.butter(order, Wn, 'low')
+#order = 3
+#Wn = 0.003
+#b,a = signal.butter(order, Wn, 'low')
 
 distance = 0
 velocity = 0
@@ -60,6 +60,7 @@ while True:
 	time_temp = time.time()	
 	time_arr.append(time_temp)
 
+	time_start = time.time()
 	bes_x = read_word_2c(0x3b, address)
 	bes_y = read_word_2c(0x3d, address)
 	bes_z = read_word_2c(0x3f, address)
@@ -67,6 +68,7 @@ while True:
 	bes_x_ska = bes_x / 16384.0 * 9.8
 	bes_y_ska = bes_y / 16384.0 * 9.8
 	bes_z_ska = bes_z / 16384.0 * 9.8
+	print(time.time() - time_start)
 
 	#print "x:", bes_x_ska
 	#print "y:", bes_y_ska
