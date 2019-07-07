@@ -86,10 +86,16 @@ def check_turning(mutex, turn, turn_flag):
 	global real_gyro
 	global stop_key
 	gyro_arr = []
+	index = 1
 	while True:
+		f = open("left_turn"+str(index)+".txt","a")
 		#print(mp.current_process())
-		gyro_arr.append((read_gyro() * 250) / 131)
+		data = read_gyro()*250/131
+		f.write(str(data))
+		f.write('\n')
+		gyro_arr.append(data)
 		if len(gyro_arr) >= 700:
+			index = index + 1
 			real_gyro = np.median(gyro_arr)
 			if real_gyro < 2000 and real_gyro > 2000:
 				mutex.acquire()
