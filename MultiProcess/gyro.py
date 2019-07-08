@@ -65,7 +65,7 @@ def get_bes(mutex, distance, dis_flag):
 	while True:
 		#print(mp.current_process())
 		bes_arr.append(read_bes_y())
-		if len(bes_arr) >= 700:
+		if len(bes_arr) >= 300:
 			real_bes = np.std(bes_arr)
 			if real_bes < 0.2 and real_bes > 0:
 				pass
@@ -89,7 +89,7 @@ def check_turning(mutex, turn, turn_flag):
 	while True:
 		#print(mp.current_process())
 		gyro_arr.append((read_gyro() * 250) / 131)
-		if len(gyro_arr) >= 700:
+		if len(gyro_arr) >= 300:
 			real_gyro = np.median(gyro_arr)
 			if real_gyro < 2000 and real_gyro > 2000:
 				mutex.acquire()
