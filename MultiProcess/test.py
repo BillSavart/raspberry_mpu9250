@@ -62,10 +62,16 @@ def get_bes(mutex, distance, dis_flag):
 	global real_bes
 	global stop_key
 	bes_arr = []
+	index = 1
 	while True:
 		#print(mp.current_process())
-		bes_arr.append(read_bes_y())
+		fi = open("run" + str(index) + ".txt", "a")
+		data = read_bes_y()
+		fi.write(str(data))
+		fi.write("\n")
+		bes_arr.append(data)
 		if len(bes_arr) >= 700:
+			index = index + 1
 			real_bes = np.std(bes_arr)
 			if real_bes < 0.2 and real_bes > 0:
 				pass
@@ -88,11 +94,11 @@ def check_turning(mutex, turn, turn_flag):
 	gyro_arr = []
 	index = 1
 	while True:
-		f = open("left_turn"+str(index)+".txt","a")
+		#f = open("left_turn"+str(index)+".txt","a")
 		#print(mp.current_process())
 		data = read_gyro()*250/131
-		f.write(str(data))
-		f.write('\n')
+		#f.write(str(data))
+		#f.write('\n')
 		gyro_arr.append(data)
 		if len(gyro_arr) >= 700:
 			index = index + 1
