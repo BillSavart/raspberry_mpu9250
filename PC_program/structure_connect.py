@@ -8,6 +8,8 @@ class StructureConnection:
     position_y = 0 # 裝置在Map的位置(y)
     direction = -1 # 裝置方向
     dist_save = 0 # 距離暫存
+    bes_data_list = []
+    gyro_list = []
   
     def __init__(self,num,ip_position): # Constructor
         self.color_set = (0,255,0)
@@ -35,22 +37,22 @@ class StructureConnection:
             print(self.direction)
             dist = dist + self.dist_save # avoid error
             dist_cm = dist*100 # change meter to centimeter
-            if dist_cm < 320:
+            if dist_cm < 70:
                 self.dist_save = self.dist_save + dist
             else:
                 self.dist_save = 0
-            map_cm = dist_cm/320 # change the billy ruler
-            pixel_num = int(map_cm*100/1.5) # change to pixel
-        
-            if self.direction == 0:
-                self.position_y -= pixel_num 
-            elif self.direction == 90:
-                self.position_x += pixel_num
-            elif self.direction == 180:
-                self.position_y += pixel_num
-            elif self.direction == 270:
-                self.position_x -= pixel_num
-            else:
-                pass
+                map_cm = dist_cm/180. # change the billy ruler
+                pixel_num = int(map_cm*100/1.5) # change to pixel
+                print("pixel_num: "+str(pixel_num)) 
+                if self.direction == 0:
+                    self.position_y -= pixel_num 
+                elif self.direction == 90:
+                    self.position_x += pixel_num
+                elif self.direction == 180:
+                    self.position_y += pixel_num
+                elif self.direction == 270:
+                    self.position_x -= pixel_num
+                else:
+                    pass
 
 
