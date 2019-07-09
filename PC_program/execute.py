@@ -5,13 +5,41 @@ import socket
 import selectors
 import types
 from structure_connect import StructureConnection
+import multiprocessing as mp
 
 inti_flag = -1
 connection_arr = list()
 connection_num = np.zeros(9)
 host = '192.168.68.97'
 port = 8888
- 
+
+def localbot():
+    bot1_arr = [[0,1],[0,2],[0,3],[0,4]]
+    bot2_arr = [[3,4],[4,6],[5,7],[6,8]]
+    bot3_arr = [[8,0],[6,1],[7,1],[9,0]]
+
+    bot1_p = 0
+    bot2_p = 0
+    bot3_p = 0
+
+    while True:
+        bot1_x.value = bot1_arr[bot1_p][0]
+        bot1_y.value = bot1_arr[bot1_p][1]
+        bot2_x.value = bot2_arr[bot2_p][0]
+        bot2_y.value = bot2_arr[bot2_p][1]
+        bot3_x.value = bot3_arr[bot3_p][0]
+        bot3_y.value = bot3_arr[bot3_p][1] 
+        bot1_p = bot1_p + 1
+        if(bot1_p >= len(bot1_arr)):
+            bot1_p = bot1_p % len(bot1_arr)
+        bot2_p = bot2_p + 1
+        if(bot2_p >= len(bot2_arr)):      
+            bot2_p = bot2_p % len(bot2_arr)
+        bot3_p = bot3_p + 1       
+        if(bot3_p >= len(bot3_arr)):      
+            bot3_p = bot3_p % len(bot3_arr)
+        time.sleep(1)
+
 def accept_wrapper(sock,sel):
     global connection_arr
     global connection_num
@@ -69,8 +97,7 @@ def service_connection(key, mask,sel,image):
                     elif(data.outb.decode() == "HELP2"):
                         helpConditionExec("HELP2",i.id_num,image)
                     else:
-                        drawNewSpot(image,data.outb.decode(),i.id_num)
-                    
+                        drawNewSpot(image,data.outb.decode(),i.id_num)                    
                     break
             # Device 傳輸資料時, call 對應function
 #--------------------------------------------------------------------#
@@ -124,19 +151,55 @@ def addNewPoint(event,x,y,flags,param):
             print ("dir: ",connection_arr[inti_flag].direction)
             inti_flag = -1
 
+def drawbot(image):
+    global bot1_old_x
+    global bot1_old_y
+    global bot2_old_x
+    global bot2_old_y
+    global bot3_old_x
+    global bot3_old_y
+
+#    cv2.putText(image,"2",(bot1_old_x.value,bot1_old_y.value),cv2.FONT_HERSHEY_PLAIN,2,(255,255,255),3)
+#    cv2.putText(image,"2",(bot1_x.value,bot1_y.value),cv2.FONT_HERSHEY_PLAIN,2,(0,139,0),3)
+#    cv2.putText(image,"3",(bot2_old_x.value,bot2_old_y.value),cv2.FONT_HERSHEY_PLAIN,2,(255,255,255),3)
+#    cv2.putText(image,"3",(bot2_x.value,bot2_y.value),cv2.FONT_HERSHEY_PLAIN,2,(0,139,0),3)
+#    cv2.putText(image,"4",(bot3_old_x.value,bot3_old_y.value),cv2.FONT_HERSHEY_PLAIN,2,(255,255,255),3)
+#    cv2.putText(image,"4",(bot3_x.value,bot3_y.value),cv2.FONT_HERSHEY_PLAIN,2,(0,139,0),3)
+    bot1_old_x = bot1_x.value
+    bot1_old_y = bot1_y.value    
+    bot2_old_x = bot2_x.value
+    bot2_old_y = bot2_y.value
+    bot3_old_x = bot3_x.value
+    bot3_old_y = bot3_y.value
+
 def main():
     global connection_arr
+    global bot1_old_x
+    global bot1_old_y
+    global bot2_old_x
+    global bot2_old_y
+    global bot3_old_x
+    global bot3_old_y
 
     i = 0
     while(i<10):
         connection_arr.append(StructureConnection(0,"0"))
         i = i + 1
 
-    image = cv2.imread("../IMAGE/image_draw.JPG")
+    image = cv2.imread("../IMAGE/1F_image_new.jpg")
+    image1 = cv2.imread("../IMAGE/1F_image_new.jpg")
+    image2 = cv2.imread("../IMAGE/1F_image_new.jpg")
+    image3 = cv2.imread("../IMAGE/1F_image_new.jpg")
+    image = np.hstack((image,image1))
+    image1 = np.hstack((image2,image3))
+    image = np.vstack((image,image1))
     cv2.namedWindow("Image",0)
     cv2.setWindowProperty("Image",cv2.WND_PROP_FULLSCREEN,cv2.WINDOW_FULLSCREEN )
     cv2.setMouseCallback("Image",addNewPoint)
     cv2.imshow("Image",image)
+    
+    bot = mp.Process(target = localbot)
+    bot.start()
 
     try:
         sel = selectors.DefaultSelector()
@@ -149,13 +212,14 @@ def main():
         sel.register(lsock, selectors.EVENT_READ, data=None)
         while True:
             events = sel.select(timeout=None)########shutttttttt down
+            drawbot(image)
             for key, mask in events:      
                 if key.data is None:
                     accept_wrapper(key.fileobj,sel)
                 else:
                     service_connection(key, mask,sel,image)    
 #-------------------------------------------------------------#
-# to show image 
+# to show image
             cv2.imshow("Image",image)
             if cv2.waitKey(500) & 0xFF == ord('q'):
                 break
@@ -163,8 +227,21 @@ def main():
 #-----------------------------------------------------------------#
     finally:
         lsock.close()
+        bot.join()
         print("close socket")
 
 
 if __name__ == "__main__" :
+    bot1_x = mp.Value("i",0)    
+    bot1_y = mp.Value("i",0)
+    bot2_x = mp.Value("i",0)
+    bot2_y = mp.Value("i",0)
+    bot3_x = mp.Value("i",0)
+    bot3_y = mp.Value("i",0)
+    bot1_old_x = bot1_x.value
+    bot1_old_y = bot1_y.value
+    bot2_old_x = bot2_x.value
+    bot2_old_y = bot2_y.value
+    bot3_old_x = bot3_x.value
+    bot3_old_y = bot3_y.value
     main()
