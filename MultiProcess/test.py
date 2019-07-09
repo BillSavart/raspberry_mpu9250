@@ -65,7 +65,7 @@ def get_bes(mutex, distance, dis_flag):
 	index = 1
 	while True:
 		#print(mp.current_process())
-		fi = open("run" + str(index) + ".txt", "a")
+		fi = open("billwalk" + str(index) + ".txt", "a")
 		data = read_bes_y()
 		fi.write(str(data))
 		fi.write("\n")
