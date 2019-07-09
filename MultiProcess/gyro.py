@@ -5,7 +5,7 @@ import socket
 import numpy as np
 import multiprocessing as mp
 
-HOST = '192.168.68.97'
+HOST = '192.168.208.130'
 PORT = 8888
 
 # Register
@@ -65,17 +65,17 @@ def get_bes(mutex, distance, dis_flag):
 	while True:
 		#print(mp.current_process())
 		bes_arr.append(read_bes_y())
-		if len(bes_arr) >= 300:
+		if len(bes_arr) >= 500:
 			real_bes = np.std(bes_arr)
-			if real_bes < 0.2 and real_bes > 0:
+			if real_bes <= 0.5 and real_bes > 0:
 				pass
-			elif real_bes > 0.2 and real_bes < 1.6:
+			elif real_bes > 0.5 and real_bes < 2:
 				mutex.acquire()
-				distance.value = distance.value + 0.4
+				distance.value = distance.value + 0.1
 				mutex.release()
 			else:
 				mutex.acquire()
-				distance.value = distance.value + 1
+				distance.value = distance.value + 0.2
 				mutex.release()
 			bes_arr = []
 			dis_flag.value = 1
@@ -89,9 +89,9 @@ def check_turning(mutex, turn, turn_flag):
 	while True:
 		#print(mp.current_process())
 		gyro_arr.append((read_gyro() * 250) / 131)
-		if len(gyro_arr) >= 300:
+		if len(gyro_arr) >= 500:
 			real_gyro = np.median(gyro_arr)
-			if real_gyro < 2000 and real_gyro > 2000:
+			if real_gyro <= 10000 and real_gyro >= -10000:
 				mutex.acquire()
 				turn.value = 0
 				mutex.release()
