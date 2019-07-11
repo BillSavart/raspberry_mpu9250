@@ -5,7 +5,7 @@ import socket
 import numpy as np
 import multiprocessing as mp
 
-HOST = '192.168.208.130'
+HOST = '192.168.68.97'
 PORT = 8888
 
 # Register
@@ -160,7 +160,8 @@ try:
 		mutex.acquire()
 		if help_flag == False and dis_flag.value == 1:
 			#print(distance.value)
-			s.send(str(distance.value))
+			temp_dis = str(distance.value)
+			s.send(temp_dis)
 			data = s.recv(1024)
 			print(data)
 			distance.value = 0

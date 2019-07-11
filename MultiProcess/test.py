@@ -65,15 +65,15 @@ def get_bes(mutex, distance, dis_flag):
 	index = 1
 	while True:
 		#print(mp.current_process())
-		fi = open("billwalk" + str(index) + ".txt", "a")
+		#fi = open("run" + str(index) + ".txt", "a")
 		data = read_bes_y()
-		fi.write(str(data))
-		fi.write("\n")
+		#fi.write(str(data))
+		#fi.write("\n")
 		bes_arr.append(data)
-		if len(bes_arr) >= 700:
+		if len(bes_arr) >= 500:
 			index = index + 1
 			real_bes = np.std(bes_arr)
-			if real_bes < 0.2 and real_bes > 0:
+			if real_bes <= 0.2 and real_bes > 0:
 				pass
 			elif real_bes > 0.2 and real_bes < 1.6:
 				mutex.acquire()
@@ -87,6 +87,8 @@ def get_bes(mutex, distance, dis_flag):
 			dis_flag.value = 1
 		if stop_key == True:
 			break
+		if index > 100:
+			exit(1)
 
 def check_turning(mutex, turn, turn_flag):
 	global real_gyro
@@ -94,16 +96,16 @@ def check_turning(mutex, turn, turn_flag):
 	gyro_arr = []
 	index = 1
 	while True:
-		#f = open("left_turn"+str(index)+".txt","a")
+		f = open("left_turn"+str(index)+".txt","a")
 		#print(mp.current_process())
 		data = read_gyro()*250/131
-		#f.write(str(data))
-		#f.write('\n')
+		f.write(str(data))
+		f.write('\n')
 		gyro_arr.append(data)
-		if len(gyro_arr) >= 700:
+		if len(gyro_arr) >= 500:
 			index = index + 1
 			real_gyro = np.median(gyro_arr)
-			if real_gyro < 2000 and real_gyro > 2000:
+			if real_gyro <= 10000 and real_gyro > 10000:
 				mutex.acquire()
 				turn.value = 0
 				mutex.release()
@@ -121,7 +123,9 @@ def check_turning(mutex, turn, turn_flag):
 			gyro_arr = []
 		if stop_key == True:
 			break
-
+		
+		if index > 100:
+			exit(1)
 #main
 bus = smbus.SMBus(1) 
 address = 0x68       # via i2cdetect
