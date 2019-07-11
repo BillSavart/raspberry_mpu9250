@@ -13,14 +13,15 @@ connection_num = np.zeros(9)
 host = '192.168.68.97'
 port = 8888
 
-keep = np.array([0,0,3])
+image = []
+keep = []
 middle_x = 1170 
 middle_y = 720
 
 def localbot():
-    bot1_arr = [[0,1],[0,2],[0,3],[0,4]]
-    bot2_arr = [[3,4],[4,6],[5,7],[6,8]]
-    bot3_arr = [[8,0],[6,1],[7,1],[9,0]]
+    bot1_arr = [[100,101],[100,200],[100,300],[100,400]]
+    #bot2_arr = [[3,4],[4,6],[5,7],[6,8]]
+    #bot3_arr = [[8,0],[6,1],[7,1],[9,0]]
 
     bot1_p = 0
     bot2_p = 0
@@ -29,19 +30,19 @@ def localbot():
     while True:
         bot1_x.value = bot1_arr[bot1_p][0]
         bot1_y.value = bot1_arr[bot1_p][1]
-        bot2_x.value = bot2_arr[bot2_p][0]
-        bot2_y.value = bot2_arr[bot2_p][1]
-        bot3_x.value = bot3_arr[bot3_p][0]
-        bot3_y.value = bot3_arr[bot3_p][1] 
+        #bot2_x.value = bot2_arr[bot2_p][0]
+        #bot2_y.value = bot2_arr[bot2_p][1]
+        #bot3_x.value = bot3_arr[bot3_p][0]
+        #bot3_y.value = bot3_arr[bot3_p][1] 
         bot1_p = bot1_p + 1
         if(bot1_p >= len(bot1_arr)):
             bot1_p = bot1_p % len(bot1_arr)
-        bot2_p = bot2_p + 1
-        if(bot2_p >= len(bot2_arr)):      
-            bot2_p = bot2_p % len(bot2_arr)
-        bot3_p = bot3_p + 1       
-        if(bot3_p >= len(bot3_arr)):      
-            bot3_p = bot3_p % len(bot3_arr)
+        #bot2_p = bot2_p + 1
+        #if(bot2_p >= len(bot2_arr)):      
+        #    bot2_p = bot2_p % len(bot2_arr)
+        #bot3_p = bot3_p + 1       
+        #if(bot3_p >= len(bot3_arr)):      
+        #    bot3_p = bot3_p % len(bot3_arr)
         time.sleep(1)
 
 def accept_wrapper(sock,sel):
@@ -68,9 +69,10 @@ def accept_wrapper(sock,sel):
     events = selectors.EVENT_READ | selectors.EVENT_WRITE
     sel.register(conn, events, data=data)
 
-def service_connection(key, mask,sel,image,img_fireman):
+def service_connection(key, mask,sel,img_fireman):
     global connection_arr
     global connection_num
+    global image
     sock = key.fileobj
     data = key.data
     if mask & selectors.EVENT_READ:
@@ -97,11 +99,11 @@ def service_connection(key, mask,sel,image,img_fireman):
             for i in connection_arr:
                 if(i.ip_addr == str(data.addr[0])):
                     if(data.outb.decode() == "HELP"):
-                        helpConditionExec("HELP",i.id_num,image)
+                        helpConditionExec("HELP",i.id_num)
                     elif(data.outb.decode() == "HELP2"):
-                        helpConditionExec("HELP2",i.id_num,image)
+                        helpConditionExec("HELP2",i.id_num)
                     else:
-                        drawNewSpot(image,img_fireman,data.outb.decode(),i.id_num)                    
+                        drawNewSpot(data.outb.decode(),i.id_num,img_fireman)                    
                     break
             # Device 傳輸資料時, call 對應function
 #--------------------------------------------------------------------#
@@ -109,14 +111,13 @@ def service_connection(key, mask,sel,image,img_fireman):
             data.outb = data.outb[sent:]
     
  #######    # running handling
-def drawNewSpot(image,img_fireman,data,index):
+def drawNewSpot(data,index,img_fireman):
     global connection_arr
     global keep 
+    global image
+    global inti_flag    
 
-    print(type(keep))
-    print(type(image))
-
-    image = keep
+    image = keep.copy()
 #    cv2.putText(image,str(connection_arr[index].id_num+1),(connection_arr[index].position_x,connection_arr[index].position_y),cv2.FONT_HERSHEY_PLAIN,2,(255,255,255),3)
     if(data != "HELP"):
         cv2.line(image,(5,5),(middle_x,5),(0,139,0),10,6)
@@ -125,16 +126,17 @@ def drawNewSpot(image,img_fireman,data,index):
         cv2.line(image,(middle_x,5),(middle_x,middle_y),(0,139,0),10,6)
         if(data == "No Turn" or data == "Left" or data == "Right"):
             connection_arr[index].color_set = (0,139,0)
-            connection_arr[index].addNewPosition(data,0,image)
+            connection_arr[index].addNewPosition(data,0)
         else:
             connection_arr[index].color_set = (0,139,0)
-            connection_arr[index].addNewPosition("No Turn",float(data),image)
-    
-    image[connection_arr[index].position_x-10 : connection_arr[index].position_x + 10 , connection_arr[index].position_y-10 : connection_arr[index].position_y + 10] = 0
-    
+            connection_arr[index].addNewPosition("No Turn",float(data))
+    if img_fireman.ndim == 3:
+        image[connection_arr[index].position_y-25 : connection_arr[index].position_y + 25 , connection_arr[index].position_x-25 : connection_arr[index].position_x + 25] = img_fireman
+        #drawbot(img_fireman)    
  #   cv2.putText(image,str(connection_arr[index].id_num+1),(connection_arr[index].position_x,connection_arr[index].position_y),cv2.FONT_HERSHEY_PLAIN,2,connection_arr[index].color_set,3)
 
-def helpConditionExec(message,num,image):
+def helpConditionExec(message,num):
+    global image
     if(message == "HELP"):
         connection_arr[num].color_set = (0,165,255)
         cv2.line(image,(5,5),(middle_x,5),(0,165,255),10,6)
@@ -156,7 +158,7 @@ def addNewPoint(event,x,y,flags,param):
     global connection_arr
 
     if inti_flag != -1 and event == cv2.EVENT_LBUTTONDOWN:
-        if connection_arr[inti_flag].position_x == 0 and connection_arr[inti_flag].position_y == 0:
+        if connection_arr[inti_flag].position_x ==25 and connection_arr[inti_flag].position_y == 25:
             connection_arr[inti_flag].position_x = x
             connection_arr[inti_flag].position_y = y 
         else:
@@ -175,35 +177,17 @@ def addNewPoint(event,x,y,flags,param):
             print ("dir: ",connection_arr[inti_flag].direction)
             inti_flag = -1
 
-def drawbot(image):
-    global bot1_old_x
-    global bot1_old_y
-    global bot2_old_x
-    global bot2_old_y
-    global bot3_old_x
-    global bot3_old_y
+def drawbot(img_fireman):
+    global image
+    global keep
 
-#    cv2.putText(image,"2",(bot1_old_x.value,bot1_old_y.value),cv2.FONT_HERSHEY_PLAIN,2,(255,255,255),3)
-#    cv2.putText(image,"2",(bot1_x.value,bot1_y.value),cv2.FONT_HERSHEY_PLAIN,2,(0,139,0),3)
-#    cv2.putText(image,"3",(bot2_old_x.value,bot2_old_y.value),cv2.FONT_HERSHEY_PLAIN,2,(255,255,255),3)
-#    cv2.putText(image,"3",(bot2_x.value,bot2_y.value),cv2.FONT_HERSHEY_PLAIN,2,(0,139,0),3)
-#    cv2.putText(image,"4",(bot3_old_x.value,bot3_old_y.value),cv2.FONT_HERSHEY_PLAIN,2,(255,255,255),3)
-#    cv2.putText(image,"4",(bot3_x.value,bot3_y.value),cv2.FONT_HERSHEY_PLAIN,2,(0,139,0),3)
-    bot1_old_x = bot1_x.value
-    bot1_old_y = bot1_y.value    
-    bot2_old_x = bot2_x.value
-    bot2_old_y = bot2_y.value
-    bot3_old_x = bot3_x.value
-    bot3_old_y = bot3_y.value
+    image[bot1_x.value - 25 : bot1_x.value + 25 , bot1_y.value - 25 : bot1_y.vlaue + 25] = img_fireman 
+    
 
 def main():
+    global image
     global connection_arr
-    global bot1_old_x
-    global bot1_old_y
-    global bot2_old_x
-    global bot2_old_y
-    global bot3_old_x
-    global bot3_old_y
+    global keep
 
     i = 0
     while(i<10):
@@ -211,19 +195,18 @@ def main():
         i = i + 1
     
     img_fireman = cv2.imread("../IMAGE/fireman.png")
-    img_fireman = cv2.resize(img_fireman,(20,20))
+    img_fireman = cv2.resize(img_fireman,(50,50))
 
-    image = cv2.imread("../IMAGE/5f.png")
-    image1 = cv2.imread("../IMAGE/5f.png")
-    image2 = cv2.imread("../IMAGE/5f.png")
-    image3 = cv2.imread("../IMAGE/5f.png")
+    image = cv2.imread("../IMAGE/1f.png")
+    image1 = cv2.imread("../IMAGE/1f.png")
+    image2 = cv2.imread("../IMAGE/1f.png")
+    image3 = cv2.imread("../IMAGE/1f.png")
     image = np.hstack((image,image1))
     image1 = np.hstack((image2,image3))
     image = np.vstack((image,image1))
-    keep = image
+    
     cv2.namedWindow("Image",0)
     cv2.setWindowProperty("Image",cv2.WND_PROP_FULLSCREEN,cv2.WINDOW_FULLSCREEN )
-    cv2.setMouseCallback("Image",addNewPoint)
     
     image = cv2.line(image,(5,5),(middle_x*2,5),(0,139,0),10,6)
     image = cv2.line(image,(5,middle_y),(middle_x*2,middle_y),(0,139,0),10,6)
@@ -232,10 +215,13 @@ def main():
     image = cv2.line(image,(middle_x,5),(middle_x,middle_y*2),(0,139,0),10,6)
     image = cv2.line(image,(middle_x*2,5),(middle_x*2,middle_y*2),(0,139,0),10,6)
 
+    cv2.setMouseCallback("Image",addNewPoint)
+    keep = image.copy()
+
     cv2.imshow("Image",image)
     
- #   bot = mp.Process(target = localbot)
- #   bot.start()
+    bot = mp.Process(target = localbot)
+    bot.start()
 
     try:
         sel = selectors.DefaultSelector()
@@ -248,12 +234,11 @@ def main():
         sel.register(lsock, selectors.EVENT_READ, data=None)
         while True:
             events = sel.select(timeout=None)########shutttttttt down
-            #drawbot(image)
             for key, mask in events:      
                 if key.data is None:
                     accept_wrapper(key.fileobj,sel)
                 else:
-                    service_connection(key, mask,sel,image,img_fireman)    
+                    service_connection(key, mask,sel,img_fireman)    
 #-------------------------------------------------------------#
 # to show image
             cv2.imshow("Image",image)
@@ -263,7 +248,7 @@ def main():
 #-----------------------------------------------------------------#
     finally:
         lsock.close()
-#        bot.join()
+        bot.join()
         print("close socket")
 
 
@@ -274,10 +259,4 @@ if __name__ == "__main__" :
     bot2_y = mp.Value("i",0)
     bot3_x = mp.Value("i",0)
     bot3_y = mp.Value("i",0)
-    bot1_old_x = bot1_x.value
-    bot1_old_y = bot1_y.value
-    bot2_old_x = bot2_x.value
-    bot2_old_y = bot2_y.value
-    bot3_old_x = bot3_x.value
-    bot3_old_y = bot3_y.value
     main()

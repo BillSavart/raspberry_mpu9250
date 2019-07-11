@@ -4,8 +4,8 @@ class StructureConnection:
     color_set = (0,0,0) # 紅綠燈的燈號
     id_num = 0 # 顯示在Map的數字
     ip_addr = "" # 裝置ip
-    position_x = 0 # 裝置在Map的位置(x)
-    position_y = 0 # 裝置在Map的位置(y)
+    position_x = 25 # 裝置在Map的位置(x)
+    position_y = 25 # 裝置在Map的位置(y)
     direction = -1 # 裝置方向
     dist_save = 0 # 距離暫存
     bes_data_list = []
@@ -16,7 +16,7 @@ class StructureConnection:
         self.id_num = num
         self.ip_addr = ip_position
 
-    def addNewPosition(self,direct,dist,image): # 我們的function
+    def addNewPosition(self,direct,dist): # 我們的function
         if self.direction != -1:
 # change direction        
             if direct == "Right":
