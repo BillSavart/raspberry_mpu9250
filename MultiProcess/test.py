@@ -5,7 +5,7 @@ import socket
 import numpy as np
 import multiprocessing as mp
 
-HOST = '192.168.68.97'
+HOST = '192.168.68.100'
 PORT = 8888
 
 # Register
@@ -64,11 +64,11 @@ def get_bes(mutex, distance, dis_flag):
 	bes_arr = []
 	index = 1
 	while True:
-		#print(mp.current_process())
-		#fi = open("run" + str(index) + ".txt", "a")
+		print(mp.current_process())
+		fi = open("stop" + str(index) + ".txt", "a")
 		data = read_bes_y()
-		#fi.write(str(data))
-		#fi.write("\n")
+		fi.write(str(data))
+		fi.write("\n")
 		bes_arr.append(data)
 		if len(bes_arr) >= 500:
 			index = index + 1
@@ -88,7 +88,7 @@ def get_bes(mutex, distance, dis_flag):
 		if stop_key == True:
 			break
 		if index > 100:
-			exit(1)
+			print("done")
 
 def check_turning(mutex, turn, turn_flag):
 	global real_gyro
@@ -96,24 +96,25 @@ def check_turning(mutex, turn, turn_flag):
 	gyro_arr = []
 	index = 1
 	while True:
-		f = open("left_turn"+str(index)+".txt","a")
+		#f = open("left_turn"+str(index)+".txt","a")
 		#print(mp.current_process())
 		data = read_gyro()*250/131
-		f.write(str(data))
-		f.write('\n')
+		#f.write(str(data))
+		#f.write('\n')
 		gyro_arr.append(data)
 		if len(gyro_arr) >= 500:
 			index = index + 1
 			real_gyro = np.median(gyro_arr)
-			if real_gyro <= 10000 and real_gyro > 10000:
+			#print("real:", real_gyro)
+			if real_gyro <= 2000 and real_gyro >= -2000:
 				mutex.acquire()
 				turn.value = 0
 				mutex.release()
-			elif real_gyro > 10000:
+			elif real_gyro > 2000:
 				mutex.acquire()
 				turn.value = turn.value + 1
 				mutex.release()
-			elif real_gyro < -10000:
+			elif real_gyro < -2000:
 				mutex.acquire()
 				turn.value = turn.value - 1
 				mutex.release()
@@ -125,7 +126,7 @@ def check_turning(mutex, turn, turn_flag):
 			break
 		
 		if index > 100:
-			exit(1)
+			print("done_gyro")
 #main
 bus = smbus.SMBus(1) 
 address = 0x68       # via i2cdetect

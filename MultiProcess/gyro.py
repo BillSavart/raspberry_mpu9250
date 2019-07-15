@@ -5,7 +5,7 @@ import socket
 import numpy as np
 import multiprocessing as mp
 
-HOST = '192.168.68.97'
+HOST = '192.168.68.100'
 PORT = 8888
 
 # Register
@@ -91,15 +91,15 @@ def check_turning(mutex, turn, turn_flag):
 		gyro_arr.append((read_gyro() * 250) / 131)
 		if len(gyro_arr) >= 500:
 			real_gyro = np.median(gyro_arr)
-			if real_gyro <= 10000 and real_gyro >= -10000:
+			if real_gyro <= 2000 and real_gyro >= -2000:
 				mutex.acquire()
 				turn.value = 0
 				mutex.release()
-			elif real_gyro > 10000:
+			elif real_gyro > 2000:
 				mutex.acquire()
 				turn.value = turn.value + 1
 				mutex.release()
-			elif real_gyro < -10000:
+			elif real_gyro < -2000:
 				mutex.acquire()
 				turn.value = turn.value - 1
 				mutex.release()
