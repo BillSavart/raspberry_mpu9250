@@ -19,6 +19,8 @@ help_flag = False
 real_bes = 0
 real_gyro = 0
 stop_key = False
+f_bes = open('./walk.txt', 'a')
+#f_gyro = open('no_turn' + str(index) + '.txt', 'a')
 
 def read_byte(reg):
 	return bus.read_byte_data(address, reg)
@@ -62,10 +64,15 @@ def get_bes(mutex, distance, dis_flag):
 	global real_bes
 	global stop_key
 	bes_arr = []
-	while True:
+	index = 1
+	global f_bes
+	while index <= 100:
 		#print(mp.current_process())
-		bes_arr.append(read_bes_y())
+		temp_data = read_bes_y()
+		bes_arr.append(temp_data)
+		f_bes.write(str(temp_data)+'\n')
 		if len(bes_arr) >= 500:
+			print(index)
 			real_bes = np.std(bes_arr)
 			if real_bes <= 0.5 and real_bes > 0:
 				pass
@@ -79,6 +86,7 @@ def get_bes(mutex, distance, dis_flag):
 				mutex.release()
 			bes_arr = []
 			dis_flag.value = 1
+			index = index + 1
 		if stop_key == True:
 			break
 
