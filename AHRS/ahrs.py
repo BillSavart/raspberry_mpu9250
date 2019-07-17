@@ -145,7 +145,7 @@ while True:
 	mag_arr = [mag_x, mag_y, mag_z]
 
 	q = Quaternion(1,0,0,0)
-	m = MadgwickAHRS(1/256,q,1)
+	m = MadgwickAHRS(1/1000,q,1)
 	#print("before: ",m.quaternion.q)
 	MadgwickAHRS.update(m,bes_arr, gyro_arr, mag_arr)
 	#print("after: ",m.quaternion.q)
@@ -157,4 +157,4 @@ while True:
 	print(roll)
 	print(pitch)
 	print(yaw)
-	print("\n")	
+	print("")
