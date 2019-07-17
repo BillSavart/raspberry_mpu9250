@@ -9,7 +9,7 @@ import multiprocessing as mp
 
 inti_flag = -1
 connection_arr = list()
-connection_num = np.zeros(9)
+connection_num = np.zeros(4)
 host = '192.168.68.100'
 port = 8888
 
@@ -17,33 +17,6 @@ image = []
 keep = []
 middle_x = 1170 
 middle_y = 720
-
-def localbot():
-    bot1_arr = [[100,101],[100,200],[100,300],[100,400]]
-    #bot2_arr = [[3,4],[4,6],[5,7],[6,8]]
-    #bot3_arr = [[8,0],[6,1],[7,1],[9,0]]
-
-    bot1_p = 0
-    bot2_p = 0
-    bot3_p = 0
-
-    while True:
-        bot1_x.value = bot1_arr[bot1_p][0]
-        bot1_y.value = bot1_arr[bot1_p][1]
-        #bot2_x.value = bot2_arr[bot2_p][0]
-        #bot2_y.value = bot2_arr[bot2_p][1]
-        #bot3_x.value = bot3_arr[bot3_p][0]
-        #bot3_y.value = bot3_arr[bot3_p][1] 
-        bot1_p = bot1_p + 1
-        if(bot1_p >= len(bot1_arr)):
-            bot1_p = bot1_p % len(bot1_arr)
-        #bot2_p = bot2_p + 1
-        #if(bot2_p >= len(bot2_arr)):      
-        #    bot2_p = bot2_p % len(bot2_arr)
-        #bot3_p = bot3_p + 1       
-        #if(bot3_p >= len(bot3_arr)):      
-        #    bot3_p = bot3_p % len(bot3_arr)
-        time.sleep(1)
 
 def accept_wrapper(sock,sel):
     global connection_arr
@@ -54,7 +27,7 @@ def accept_wrapper(sock,sel):
     print('accepted connection from', addr)
 #--------------------------------------------------------------------#
     i = 0
-    while(i<10):
+    while(i<4):
         if(connection_num[i] == 0):
             connection_arr[i] = StructureConnection(i,str(addr[0]))
             connection_num[i] = 1
@@ -118,38 +91,89 @@ def drawNewSpot(data,index,img_fireman):
     global inti_flag    
 
     image = keep.copy()
-#    cv2.putText(image,str(connection_arr[index].id_num+1),(connection_arr[index].position_x,connection_arr[index].position_y),cv2.FONT_HERSHEY_PLAIN,2,(255,255,255),3)
-    if(data != "HELP"):
-        cv2.line(image,(5,5),(middle_x,5),(0,139,0),10,6)
-        cv2.line(image,(5,middle_y),(middle_x,middle_y),(0,139,0),10,6)
-        cv2.line(image,(5,5),(5,middle_y),(0,139,0),10,6)
-        cv2.line(image,(middle_x,5),(middle_x,middle_y),(0,139,0),10,6)
+    if(data != "HELP" or data != "HELP2"):
+        if(index == 0):
+            cv2.line(image,(5,5),(middle_x,5),(0,139,0),10,6)
+            cv2.line(image,(5,middle_y),(middle_x,middle_y),(0,139,0),10,6)
+            cv2.line(image,(5,5),(5,middle_y),(0,139,0),10,6)
+            cv2.line(image,(middle_x,5),(middle_x,middle_y),(0,139,0),10,6)
+        elif (index == 1):
+            cv2.line(image,(middle_x,5),(middle_x*2,5),(0,139,0),10,6)
+            cv2.line(image,(middle_x,middle_y),(middle_x*2,middle_y),(0,139,0),10,6)
+            cv2.line(image,(middle_x*2,5),(middle_x*2,middle_y),(0,139,0),10,6)
+            cv2.line(image,(middle_x,5),(middle_x,middle_y),(0,139,0),10,6)
+        elif(index == 2):
+            cv2.line(image,(5,middle_y),(5,middle_y*2),(0,139,0),10,6)
+            cv2.line(image,(middle_x,middle_y),(middle_x,middle_y*2),(0,139,0),10,6)
+            cv2.line(image,(5,middle_y),(middle_x,middle_y),(0,139,0),10,6)
+            cv2.line(image,(5,middle_y*2),(middle_x,middle_y*2),(0,139,0),10,6)
+        elif(index == 3):
+            cv2.line(image,(middle_x,middle_y),(middle_x*2,middle_y),(0,139,0),10,6)
+            cv2.line(image,(middle_x,middle_y*2),(middle_x*2,middle_y*2),(0,139,0),10,6)
+            cv2.line(image,(middle_x,middle_y),(middle_x,middle_y*2),(0,139,0),10,6)
+            cv2.line(image,(middle_x*2,middle_y),(middle_x*2,middle_y*2),(0,139,0),10,6)
+        else:
+            pass
         if(data == "No Turn" or data == "Left" or data == "Right"):
+            print("index:",index)
             connection_arr[index].color_set = (0,139,0)
             connection_arr[index].addNewPosition(data,0)
         else:
             connection_arr[index].color_set = (0,139,0)
             connection_arr[index].addNewPosition("No Turn",float(data))
-    if img_fireman.ndim == 3:
-        image[connection_arr[index].position_y-25 : connection_arr[index].position_y + 25 , connection_arr[index].position_x-25 : connection_arr[index].position_x + 25] = img_fireman
-        #drawbot(img_fireman)    
- #   cv2.putText(image,str(connection_arr[index].id_num+1),(connection_arr[index].position_x,connection_arr[index].position_y),cv2.FONT_HERSHEY_PLAIN,2,connection_arr[index].color_set,3)
+    for i in range(4):
+        image[connection_arr[i].position_y-25 : connection_arr[i].position_y + 25 , connection_arr[i].position_x-25 : connection_arr[i].position_x + 25] = img_fireman
 
 def helpConditionExec(message,num):
     global image
     if(message == "HELP"):
         connection_arr[num].color_set = (0,165,255)
-        cv2.line(image,(5,5),(middle_x,5),(0,165,255),10,6)
-        cv2.line(image,(5,middle_y),(middle_x,middle_y),(0,165,255),10,6)
-        cv2.line(image,(5,5),(5,middle_y),(0,165,255),10,6)
-        cv2.line(image,(middle_x,5),(middle_x,middle_y),(0,165,255),10,6)
+        if(num == 0):
+            cv2.line(image,(5,5),(middle_x,5),(0,165,255),10,6)
+            cv2.line(image,(5,middle_y),(middle_x,middle_y),(0,165,255),10,6)
+            cv2.line(image,(5,5),(5,middle_y),(0,165,255),10,6)
+            cv2.line(image,(middle_x,5),(middle_x,middle_y),(0,165,255),10,6)
+        elif (num == 1):
+            cv2.line(image,(middle_x,5),(middle_x*2,5),(0,165,255),10,6) 
+            cv2.line(image,(middle_x,middle_y),(middle_x*2,middle_y),(0,165,255),10,6)
+            cv2.line(image,(middle_x*2,5),(middle_x*2,middle_y),(0,165,255),10,6)
+            cv2.line(image,(middle_x,5),(middle_x,middle_y),(0,165,255),10,6)
+        elif(num == 2):                                    
+            cv2.line(image,(5,middle_y),(5,middle_y*2),(0,165,255),10,6) 
+            cv2.line(image,(middle_x,middle_y),(middle_x,middle_y*2),(0,165,255),10,6)
+            cv2.line(image,(5,middle_y),(middle_x,middle_y),(0,165,255),10,6)
+            cv2.line(image,(5,middle_y*2),(middle_x,middle_y*2),(0,165,255),10,6)
+        elif(num == 3): 
+            cv2.line(image,(middle_x,middle_y),(middle_x*2,middle_y),(0,165,255),10,6)
+            cv2.line(image,(middle_x,middle_y*2),(middle_x*2,middle_y*2),(0,165,255),10,6)
+            cv2.line(image,(middle_x,middle_y),(middle_x,middle_y*2),(0,165,255),10,6)
+            cv2.line(image,(middle_x*2,middle_y),(middle_x*2,middle_y*2),(0,165,255),10,6)
+        else:    
+            pass 
     elif (message == "HELP2"):
         connection_arr[num].color_set = (0,0,255)
-        cv2.line(image,(5,5),(middle_x,5),(0,0,255),10,6)
-        cv2.line(image,(5,middle_y),(middle_x,middle_y),(0,0,255),10,6)
-        cv2.line(image,(5,5),(5,middle_y),(0,0,255),10,6)
-        cv2.line(image,(middle_x,5),(middle_x,middle_y),(0,0,255),10,6)
-
+        if(num == 0):
+            cv2.line(image,(5,5),(middle_x,5),(0,0,255),10,6)
+            cv2.line(image,(5,middle_y),(middle_x,middle_y),(0,0,255),10,6)
+            cv2.line(image,(5,5),(5,middle_y),(0,0,255),10,6)
+            cv2.line(image,(middle_x,5),(middle_x,middle_y),(0,0,255),10,6)
+        elif (num == 1):
+            cv2.line(image,(middle_x,5),(middle_x*2,5),(0,0,255),10,6) 
+            cv2.line(image,(middle_x,middle_y),(middle_x*2,middle_y),(0,0,255),10,6)
+            cv2.line(image,(middle_x*2,5),(middle_x*2,middle_y),(0,0,255),10,6)
+            cv2.line(image,(middle_x,5),(middle_x,middle_y),(0,0,255),10,6)
+        elif(num == 2):                                    
+            cv2.line(image,(5,middle_y),(5,middle_y*2),(0,0,255),10,6) 
+            cv2.line(image,(middle_x,middle_y),(middle_x,middle_y*2),(0,0,255),10,6)
+            cv2.line(image,(5,middle_y),(middle_x,middle_y),(0,0,255),10,6)
+            cv2.line(image,(5,middle_y*2),(middle_x,middle_y*2),(0,0,255),10,6)
+        elif(num == 3): 
+            cv2.line(image,(middle_x,middle_y),(middle_x*2,middle_y),(0,0,255),10,6)
+            cv2.line(image,(middle_x,middle_y*2),(middle_x*2,middle_y*2),(0,0,255),10,6)
+            cv2.line(image,(middle_x,middle_y),(middle_x,middle_y*2),(0,0,255),10,6)
+            cv2.line(image,(middle_x*2,middle_y),(middle_x*2,middle_y*2),(0,0,255),10,6)
+        else:    
+            pass 
     else:
        pass
 
@@ -177,13 +201,6 @@ def addNewPoint(event,x,y,flags,param):
             print ("dir: ",connection_arr[inti_flag].direction)
             inti_flag = -1
 
-def drawbot(img_fireman):
-    global image
-    global keep
-
-    image[bot1_x.value - 25 : bot1_x.value + 25 , bot1_y.value - 25 : bot1_y.vlaue + 25] = img_fireman 
-    
-
 def main():
     global image
     global connection_arr
@@ -197,10 +214,10 @@ def main():
     img_fireman = cv2.imread("../IMAGE/fireman.png")
     img_fireman = cv2.resize(img_fireman,(50,50))
 
-    image = cv2.imread("../IMAGE/5f.png")
-    image1 = cv2.imread("../IMAGE/5f.png")
-    image2 = cv2.imread("../IMAGE/5f.png")
-    image3 = cv2.imread("../IMAGE/5f.png")
+    image = cv2.imread("../IMAGE/1f.png")
+    image1 = cv2.imread("../IMAGE/1f.png")
+    image2 = cv2.imread("../IMAGE/1f.png")
+    image3 = cv2.imread("../IMAGE/1f.png")
     image = np.hstack((image,image1))
     image1 = np.hstack((image2,image3))
     image = np.vstack((image,image1))
@@ -220,9 +237,6 @@ def main():
 
     cv2.imshow("Image",image)
     
-    bot = mp.Process(target = localbot)
-    bot.start()
-
     try:
         sel = selectors.DefaultSelector()
 
@@ -248,15 +262,8 @@ def main():
 #-----------------------------------------------------------------#
     finally:
         lsock.close()
-        bot.join()
         print("close socket")
 
 
 if __name__ == "__main__" :
-    bot1_x = mp.Value("i",0)    
-    bot1_y = mp.Value("i",0)
-    bot2_x = mp.Value("i",0)
-    bot2_y = mp.Value("i",0)
-    bot3_x = mp.Value("i",0)
-    bot3_y = mp.Value("i",0)
     main()
