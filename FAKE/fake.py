@@ -15,7 +15,7 @@ try:
 		if help_condition == False:
 			if count % 5 == 0:
 				cmd = "Right"
-			elif count == 20:
+			elif count == 21:
 				help_condition = True
 			else:
 				cmd = "No Turn"
@@ -28,13 +28,14 @@ try:
 			print(data)
 			count = count + 1
 		else:
-			cmd = "HELP"
-			s.send("cmd")
-			data = s.recv(1024)
-			print(data)
-			help_num += 1
+                        if help_num < 5:
+			    cmd = "HELP"
+			    s.send(cmd)
+			    data = s.recv(1024)
+			    print(data)
+			    help_num += 1
 
-			if help_num == 3:
+			if help_num == 5:
 				cmd = "HELP2"
 				s.send(cmd)
 				data = s.recv(1024)
@@ -45,7 +46,6 @@ try:
 				help_num = 0
 			else:
 				pass
-
 		time.sleep(1)
 finally:
 	s.close()
