@@ -211,15 +211,20 @@ def help2():
 	time.sleep(1)
 
 try:
-    while True:
-        while count < 5:
-            print_no_move()
-            count += 1
-            print("NO")
-        while count >= 5:
-            walk()
-            count += 5
-            print("walk")
+	while True:
+		while count < 5:
+			print_no_move()
+			count += 1
+			print("NO")
+		s.send("num_0426")
+		d = s.recv(1024)
+		s.send("name_Winnie The Pooh")
+		d = s.recv(1024)
+		time.sleep(1)
+		while count >= 5:
+			walk()
+			count += 5
+			print("walk")
 finally:
 	s.close()
 	print('close')
