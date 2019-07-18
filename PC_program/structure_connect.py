@@ -2,6 +2,9 @@ import cv2
 
 class StructureConnection:
     color_set = (0,0,0) # 紅綠燈的燈號
+    fire_num = ""
+    fire_name = ""
+    time_pass = 0
     id_num = 0 # 顯示在Map的數字
     ip_addr = "" # 裝置ip
     position_x = 25 # 裝置在Map的位置(x)

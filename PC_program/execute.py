@@ -5,7 +5,8 @@ import socket
 import selectors
 import types
 from structure_connect import StructureConnection
-import multiprocessing as mp
+import keyboard
+import os
 
 inti_flag = -1
 connection_arr = list()
@@ -16,7 +17,8 @@ port = 8888
 image = []
 keep = []
 middle_x = 1170 
-middle_y = 720
+middle_y = 700
+init_time = 0
 
 def accept_wrapper(sock,sel):
     global connection_arr
@@ -46,6 +48,8 @@ def service_connection(key, mask,sel,img_fireman):
     global connection_arr
     global connection_num
     global image
+    global init_time
+
     sock = key.fileobj
     data = key.data
     if mask & selectors.EVENT_READ:
@@ -71,10 +75,18 @@ def service_connection(key, mask,sel,img_fireman):
 #------------------------------------------------------------------#
             for i in connection_arr:
                 if(i.ip_addr == str(data.addr[0])):
+                    i.time_pass = time.time() - init_time
+                    print(i.time_pass)
                     if(data.outb.decode() == "HELP"):
                         helpConditionExec("HELP",i.id_num)
                     elif(data.outb.decode() == "HELP2"):
                         helpConditionExec("HELP2",i.id_num)
+                    elif(data.outb.decode()[0:4] == "num_"):
+                        i.fire_num = data.outb.decode()[4:len(data.outb.decode())]
+                        print(i.fire_num)
+                    elif(data.outb.decode()[0:5] == "name_"):
+                        i.fire_name = data.outb.decode()[5:len(data.outb.decode())]
+                        print(i.fire_name)
                     else:
                         drawNewSpot(data.outb.decode(),i.id_num,img_fireman)                    
                     break
@@ -201,10 +213,16 @@ def addNewPoint(event,x,y,flags,param):
             print ("dir: ",connection_arr[inti_flag].direction)
             inti_flag = -1
 
+def show_info():
+    os.system("sudo python3 show_info.py")    
+
 def main():
     global image
     global connection_arr
     global keep
+    global init_time
+
+    init_time = time.time()
 
     i = 0
     while(i<10):
@@ -247,6 +265,8 @@ def main():
         lsock.setblocking(False)
         sel.register(lsock, selectors.EVENT_READ, data=None)
         while True:
+            if(keyboard.is_pressed('i')):
+                show_info()
             events = sel.select(timeout=None)########shutttttttt down
             for key, mask in events:      
                 if key.data is None:
