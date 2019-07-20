@@ -150,10 +150,11 @@ while True:
 	MadgwickAHRS.update(m,bes_arr, gyro_arr, mag_arr)
 	#print("after: ",m.quaternion.q)
 
-	roll = (math.atan2(m.quaternion.q[0]*m.quaternion.q[1] + m.quaternion.q[2]*m.quaternion.q[3] , 0.5 - m.quaternion.q[1]*m.quaternion.q[1] - m.quaternion.q[2]*m.quaternion.q[2])) * (180.0 / math.pi)
-	pitch = (math.asin(-2.0 * (m.quaternion.q[1]*m.quaternion.q[3] - m.quaternion.q[0] * m.quaternion.q[2]))) * (180.0 / math.pi)
-	yaw = (math.atan2(m.quaternion.q[1]*m.quaternion.q[2] + m.quaternion.q[0]*m.quaternion.q[3] , 0.5 - m.quaternion.q[2]*m.quaternion.q[2] - m.quaternion.q[3]*m.quaternion.q[3])) *(180.0 / math.pi)
+	roll = math.atan2(2.0*(m.quaternion.q[2] * m.quaternion.q[3] + m.quaternion.q[0] * m.quaternion.q[1]), m.quaternion.q[0] * m.quaternion.q[0] - m.quaternion.q[1] * m.quaternion.q[1] - m.quaternion.q[2] * m.quaternion.q[2] + m.quaternion.q[3] * m.quaternion.q[3]) * (180.0 / math.pi)
+	pitch = math.asin(-2.0 * (m.quaternion.q[1] * m.quaternion.q[3] - m.quaternion.q[0] * m.quaternion.q[2])) * (180.0 / math.pi)
+	yaw = math.atan2(2.0*(m.quaternion.q[1]*m.quaternion.q[2] + m.quaternion.q[0] * m.quaternion.q[3]), m.quaternion.q[0] * m.quaternion.q[0] + m.quaternion.q[1] * m.quaternion.q[1] - m.quaternion.q[2] * m.quaternion.q[2] - m.quaternion.q[3] * m.quaternion.q[3]) * (180.0 / math.pi)
 
+	print("qua:", m.quaternion.q[0], m.quaternion.q[1], m.quaternion.q[2], m.quaternion.q[3])
 	print("roll:",roll)
 	print("pitch:",pitch)
 	print("yaw:",yaw)
