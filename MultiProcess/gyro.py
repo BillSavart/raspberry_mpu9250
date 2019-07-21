@@ -42,7 +42,7 @@ def read_gyro():
 	xout = read_word_2c(0x43)
 	yout = read_word_2c(0x45)
 	zout = read_word_2c(0x47)
-	return xout
+	return yout
 
 def read_bes_x():
 	bes_x = read_word_2c(0x3b)
@@ -52,13 +52,13 @@ def read_bes_x():
 	bes_x_ska = bes_x / 16384.0 * 9.8
 	return bes_x_ska
 
-def read_bes_y():
+def read_bes_z():
 	bes_x = read_word_2c(0x3b)
 	bes_y = read_word_2c(0x3d)
 	bes_z = read_word_2c(0x3f)
 
-	bes_y_ska = bes_y / 16384.0 * 9.8
-	return bes_y_ska
+	bes_z_ska = bes_z / 16384.0 * 9.8
+	return bes_z_ska
 
 def get_bes(mutex, distance, dis_flag):
 	global real_bes
@@ -68,11 +68,11 @@ def get_bes(mutex, distance, dis_flag):
 	global f_bes
 	while index <= 100:
 		#print(mp.current_process())
-		temp_data = read_bes_y()
+		temp_data = read_bes_z()
 		bes_arr.append(temp_data)
 		f_bes.write(str(temp_data)+'\n')
 		if len(bes_arr) >= 500:
-			print(index)
+#			print(index)
 			real_bes = np.std(bes_arr)
 			if real_bes <= 0.5 and real_bes > 0:
 				pass
@@ -124,7 +124,7 @@ address = 0x68       # via i2cdetect
 bus.write_byte_data(address, power_mgmt_1, 0)
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-s.connect((HOST,PORT))
+#s.connect((HOST,PORT))
 
 mutex = mp.Lock()
 
@@ -143,23 +143,24 @@ try:
 	while True:
 		#print(mp.current_process())
 		#check if falling
-		bes_xout = read_bes_x()
-		if bes_xout > -9:
+		bes_zout = read_bes_z()
+		if bes_zout > -9:
 			if start_warning_time == 0:
 				start_warning_time = time.time()
 			else:
 				if time.time() - start_warning_time >= 5 and time.time() - start_warning_time < 10:
-					s.send("HELP")
-					data = s.recv(1024)
-					print(data)
+					#s.send("HELP")
+					#data = s.recv(1024)
+					#print(data)
 					#print("HELP")
-					help_flag = True
-
+					#help_flag = True
+					pass
 				elif time.time() - start_warning_time >= 10:
-					s.send("HELP2")
-					data = s.recv(1024)
-					print(data)
-					#print("HELP2")
+					#s.send("HELP2")
+					#data = s.recv(1024)
+					#print(data)
+				#	print("HELP2")
+					pass
 		else:
 			start_warning_time = 0
 			help_flag = False
@@ -169,9 +170,10 @@ try:
 		if help_flag == False and dis_flag.value == 1:
 			#print(distance.value)
 			temp_dis = str(distance.value)
-			s.send(temp_dis)
-			data = s.recv(1024)
-			print(data)
+			#s.send(temp_dis)
+			#data = s.recv(1024)
+			#print(data)
+			print(temp_dis)
 			distance.value = 0
 			dis_flag.value = 0
 		mutex.release()
@@ -181,33 +183,33 @@ try:
 			mutex.acquire()
 			turn.value = turn.value % 4
 			if turn.value == 0:
-				s.send("No Turn")
-				data = s.recv(1024)
-				print(data)
-				#print("No Turn")
+				#s.send("No Turn")
+				#data = s.recv(1024)
+				#print(data)
+				print("No Turn")
 				#pass
 			elif turn.value == 1:
-				s.send("Right")
-				data = s.recv(1024)
-				print(data)
-				#print("Right")
+				#s.send("Right")
+				#data = s.recv(1024)
+				#print(data)
+				print("Right")
 			elif turn.value == 2:
-				s.send("Right")
-				data = s.recv(1024)
-				print(data)
-				s.send("Right")
-				data = s.recv(1024)
-				print(data)
-				#print("RightRight")
+				#s.send("Right")
+				#data = s.recv(1024)
+				#print(data)
+				#s.send("Right")
+				#data = s.recv(1024)
+				#print(data)
+				print("RightRight")
 			else:
-				s.send("Left")
-				data = s.recv(1024)
-				print(data)
-				#print("Left")
+				#s.send("Left")
+				#data = s.recv(1024)
+				#print(data)
+				print("Left")
 			turn.value = 0
 			turn_flag.value = 0
 			mutex.release()
 finally:
 	stop_key = True
-	s.close()
+	#s.close()
 	print("close")
