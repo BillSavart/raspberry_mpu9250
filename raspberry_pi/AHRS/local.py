@@ -14,6 +14,8 @@ q0 = 1
 q1 = 0
 q2 = 0
 q3 = 0
+bl,al = signal.butter(3, 0.02, 'lowpass')
+bh,ah = signal.butter(3, 0.02, 'highpass')
 
 # Register
 power_mgmt_1 = 0x6b
@@ -119,15 +121,18 @@ bes_arr_z = []
 gyro_arr_x = []
 gyro_arr_y = []
 gyro_arr_z = []
+start_time = time.time()
+end_time = time.time()
+time_interval = 0.2
 
-while count < 50:
+while end_time - start_time < time_interval:
 	bes_arr_x.append(read_bes_x(address))
 	bes_arr_y.append(read_bes_y(address))
 	bes_arr_z.append(read_bes_z(address))
 	gyro_arr_x.append(read_gyro_x(address))
 	gyro_arr_y.append(read_gyro_y(address))
 	gyro_arr_z.append(read_gyro_z(address))
-	count = count + 1
+	end_time = time.time()
 
 bes_bias_x = np.average(bes_arr_x)
 bes_bias_y = np.average(bes_arr_y)
@@ -154,26 +159,59 @@ def generate_quaternion():
 	global gyro_bias_y
 	global gyro_bias_z
 	while True:
-		gyro_x = read_gyro_x(address) - gyro_bias_x
-		gyro_y = read_gyro_y(address) - gyro_bias_y
-		gyro_z = read_gyro_z(address) - gyro_bias_z
-		bes_x = read_bes_x(address) - bes_bias_x
-		bes_y = read_bes_y(address) - bes_bias_y
-		bes_z = read_bes_z(address) - bes_bias_z
-		mag_x = read_mag_x(mag_address)
-		mag_y = read_mag_y(mag_address)
-		mag_z = read_mag_z(mag_address)
+		start_time = time.time()
+		end_time = start_time
+		gyro_x_arrf = []
+		gyro_y_arrf = []
+		gyro_z_arrf = []
+		gyro_x_arr = []
+		gyro_y_arr = []
+		gyro_z_arr = []
+		bes_x_arrf = []
+		bes_y_arrf = []
+		bes_z_arrf = []
+		bes_x_arr = []
+		bes_y_arr = []
+		bes_z_arr = []
+		while end_time - start_time < time_interval:
+			gyro_x_arrf.append(read_gyro_x(address))
+			gyro_y_arrf.append(read_gyro_y(address))
+			gyro_z_arrf.append(read_gyro_z(address))
+			bes_x_arrf.append(read_bes_x(address))
+			bes_y_arrf.append(read_bes_y(address))
+			bes_z_arrf.append(read_bes_z(address))
+			end_time = time.time()
+######filter#######
+		gyro_x_arr = signal.filtfilt(bh,ah,gyro_x_arrf)
+		gyro_y_arr = signal.filtfilt(bh,ah,gyro_y_arrf)
+		gyro_z_arr = signal.filtfilt(bh,ah,gyro_z_arrf)
+		bes_x_arr = signal.filtfilt(bl,al,bes_x_arrf)
+		bes_y_arr = signal.filtfilt(bl,al,bes_y_arrf)
+		bes_z_arr = signal.filtfilt(bl,al,bes_z_arrf)
+		bes_x = np.average(bes_x_arr)
+		bes_y = np.average(bes_y_arr)
+		bes_z = np.average(bes_z_arr)
+		gyro_x = np.average(gyro_x_arr)
+		gyro_y = np.average(gyro_y_arr)
+		gyro_z = np.average(gyro_z_arr)	
 
 		keep_bx = bes_x
 		keep_by = bes_y
 		keep_bz = bes_z
-	
+
+		bes_x = bes_x - bes_bias_x
+		bes_y = bes_y - bes_bias_y
+		bes_z = bes_z - bes_bias_z
+		gyro_x = gyro_x - gyro_bias_x
+		gyro_y = gyro_y - gyro_bias_y
+		gyro_z = gyro_z - gyro_bias_z
+
 #		print(bes_x+bes_bias_x)
 #		print(bes_y+bes_bias_y)#
 #		print(bes_z+bes_bias_z)
 #		print("")
 
-		beta = 0.005
+		beta = 0.001
 		
 		qDot1 = 0.5 * (-q1 * gyro_x - q2 * gyro_y - q3 * gyro_z)
 		qDot2 = 0.5 * (q0 * gyro_x + q2 * gyro_z - q3 * gyro_y)
@@ -186,7 +224,7 @@ def generate_quaternion():
 			bes_y = bes_y * recipNorm
 			bes_z = bes_z * recipNorm
 
-			sampleFreq = 100
+			sampleFreq = 5
 	
 			_2q0 = 2.0 * q0
 			_2q1 = 2.0 * q1
