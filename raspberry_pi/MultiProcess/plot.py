@@ -6,8 +6,8 @@ count = 1
 plt.figure(1)
 temp = 0
 while count <= 100:
-    stop_f = np.loadtxt("stop.txt")
-    walk_f = np.loadtxt("walk.txt")
+    stop_f = np.loadtxt("mystop.txt")
+    walk_f = np.loadtxt("walk-waist.txt")
     #run_f = np.loadtxt("run" + str(count) + ".txt")
 
     #y_stop = signal.lfilter(b,a,stop_f)
@@ -24,7 +24,7 @@ while count <= 100:
         tmp_walk.append(walk_f[temp])
         std_s = np.std(tmp)
         std_w = np.std(tmp_walk)
-        print(temp)
+  #      print(temp)
         temp = temp + 1
 
     plt.scatter(std_s, 0, color='blue')

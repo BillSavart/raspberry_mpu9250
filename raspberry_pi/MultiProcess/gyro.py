@@ -19,7 +19,7 @@ help_flag = False
 real_bes = 0
 real_gyro = 0
 stop_key = False
-f_bes = open('./walk.txt', 'a')
+f_bes = open('./stop_chair.txt', 'a')
 #f_gyro = open('no_turn' + str(index) + '.txt', 'a')
 
 def read_byte(reg):
@@ -87,6 +87,7 @@ def get_bes(mutex, distance, dis_flag):
 			bes_arr = []
 			dis_flag.value = 1
 			index = index + 1
+			print(index)
 		if stop_key == True:
 			break
 
@@ -143,8 +144,8 @@ try:
 	while True:
 		#print(mp.current_process())
 		#check if falling
-		bes_zout = read_bes_z()
-		if bes_zout > -9:
+		bes_xout = read_bes_x()
+		if bes_xout > -6.0:
 			if start_warning_time == 0:
 				start_warning_time = time.time()
 			else:
@@ -152,15 +153,14 @@ try:
 					#s.send("HELP")
 					#data = s.recv(1024)
 					#print(data)
-					#print("HELP")
-					#help_flag = True
+					print("HELP")
+					help_flag = True
 					pass
 				elif time.time() - start_warning_time >= 10:
 					#s.send("HELP2")
 					#data = s.recv(1024)
 					#print(data)
-				#	print("HELP2")
-					pass
+					print("HELP2")
 		else:
 			start_warning_time = 0
 			help_flag = False
@@ -186,13 +186,14 @@ try:
 				#s.send("No Turn")
 				#data = s.recv(1024)
 				#print(data)
-				print("No Turn")
-				#pass
+				#print("No Turn")
+				pass
 			elif turn.value == 1:
 				#s.send("Right")
 				#data = s.recv(1024)
 				#print(data)
-				print("Right")
+				#print("Right")
+				pass
 			elif turn.value == 2:
 				#s.send("Right")
 				#data = s.recv(1024)
@@ -200,12 +201,14 @@ try:
 				#s.send("Right")
 				#data = s.recv(1024)
 				#print(data)
-				print("RightRight")
+				#print("RightRight")
+				pass
 			else:
 				#s.send("Left")
 				#data = s.recv(1024)
 				#print(data)
-				print("Left")
+				#print("Left")
+				pass
 			turn.value = 0
 			turn_flag.value = 0
 			mutex.release()
