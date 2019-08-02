@@ -19,7 +19,7 @@ help_flag = False
 real_bes = 0
 real_gyro = 0
 stop_key = False
-f_bes = open('./walk_chair.txt', 'a')
+f_bes = open('./left_waist.txt', 'a')
 #f_gyro = open('no_turn' + str(index) + '.txt', 'a')
 
 def read_byte(reg):
@@ -94,10 +94,14 @@ def get_bes(mutex, distance, dis_flag):
 def check_turning(mutex, turn, turn_flag):
 	global real_gyro
 	global stop_key
+	global f_bes
 	gyro_arr = []
 	while True:
 		#print(mp.current_process())
-		gyro_arr.append((read_gyro() * 250) / 131)
+		temp_data = (read_gyro() * 250.0) / 131.0
+		gyro_arr.append(temp_data)
+		f_bes.write(str(temp_data)+'\n')
+		
 		if len(gyro_arr) >= 500:
 			real_gyro = np.median(gyro_arr)
 			if real_gyro <= 2000 and real_gyro >= -2000:
