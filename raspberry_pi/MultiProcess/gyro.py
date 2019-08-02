@@ -19,7 +19,7 @@ help_flag = False
 real_bes = 0
 real_gyro = 0
 stop_key = False
-f_bes = open('./left_chair.txt', 'a')
+f_bes = open('./normal_walk.txt', 'a')
 #f_gyro = open('no_turn' + str(index) + '.txt', 'a')
 
 def read_byte(reg):
@@ -70,7 +70,7 @@ def get_bes(mutex, distance, dis_flag):
 		#print(mp.current_process())
 		temp_data = read_bes_z()
 		bes_arr.append(temp_data)
-		#f_bes.write(str(temp_data)+'\n')
+		f_bes.write(str(temp_data)+'\n')
 		if len(bes_arr) >= 500:
 #			print(index)
 			real_bes = np.std(bes_arr)
@@ -100,7 +100,7 @@ def check_turning(mutex, turn, turn_flag):
 		#print(mp.current_process())
 		temp_data = (read_gyro() * 250.0) / 131.0
 		gyro_arr.append(temp_data)
-		f_bes.write(str(temp_data)+'\n')
+		#f_bes.write(str(temp_data)+'\n')
 		
 		if len(gyro_arr) >= 500:
 			real_gyro = np.median(gyro_arr)
@@ -177,7 +177,7 @@ try:
 			#s.send(temp_dis)
 			#data = s.recv(1024)
 			#print(data)
-			print(temp_dis)
+			#print(temp_dis)
 			distance.value = 0
 			dis_flag.value = 0
 		mutex.release()
@@ -190,14 +190,14 @@ try:
 				#s.send("No Turn")
 				#data = s.recv(1024)
 				#print(data)
-				#print("No Turn")
-				pass
+				print("No Turn")
+				
 			elif turn.value == 1:
 				#s.send("Right")
 				#data = s.recv(1024)
 				#print(data)
-				#print("Right")
-				pass
+				print("Right")
+				
 			elif turn.value == 2:
 				#s.send("Right")
 				#data = s.recv(1024)
@@ -205,14 +205,14 @@ try:
 				#s.send("Right")
 				#data = s.recv(1024)
 				#print(data)
-				#print("RightRight")
-				pass
+				print("RightRight")
+				
 			else:
 				#s.send("Left")
 				#data = s.recv(1024)
 				#print(data)
-				#print("Left")
-				pass
+				print("Left")
+				
 			turn.value = 0
 			turn_flag.value = 0
 			mutex.release()
