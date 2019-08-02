@@ -70,7 +70,7 @@ def get_bes(mutex, distance, dis_flag):
 		#print(mp.current_process())
 		temp_data = read_bes_z()
 		bes_arr.append(temp_data)
-		f_bes.write(str(temp_data)+'\n')
+		#f_bes.write(str(temp_data)+'\n')
 		if len(bes_arr) >= 500:
 #			print(index)
 			real_bes = np.std(bes_arr)
