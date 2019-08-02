@@ -19,7 +19,7 @@ help_flag = False
 real_bes = 0
 real_gyro = 0
 stop_key = False
-f_bes = open('./stop_chair.txt', 'a')
+f_bes = open('./walk_chair.txt', 'a')
 #f_gyro = open('no_turn' + str(index) + '.txt', 'a')
 
 def read_byte(reg):
