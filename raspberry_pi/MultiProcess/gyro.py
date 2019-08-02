@@ -70,24 +70,24 @@ def get_bes(mutex, distance, dis_flag):
 		#print(mp.current_process())
 		temp_data = read_bes_z()
 		bes_arr.append(temp_data)
-		f_bes.write(str(temp_data)+'\n')
+#		f_bes.write(str(temp_data)+'\n')
 		if len(bes_arr) >= 500:
 #			print(index)
 			real_bes = np.std(bes_arr)
-			if real_bes <= 0.5 and real_bes > 0:
+			if real_bes <= 0.3 and real_bes > 0:
 				pass
-			elif real_bes > 0.5 and real_bes < 2:
-				mutex.acquire()
-				distance.value = distance.value + 0.1
-				mutex.release()
+		#	elif real_bes > 0.5 and real_bes < 2:
+		#		mutex.acquire()
+		#		distance.value = distance.value + 0.1
+		#		mutex.release()
 			else:
 				mutex.acquire()
 				distance.value = distance.value + 0.2
 				mutex.release()
 			bes_arr = []
 			dis_flag.value = 1
-			index = index + 1
-			print(index)
+			#index = index + 1
+	#		print(index)
 		if stop_key == True:
 			break
 
@@ -104,15 +104,15 @@ def check_turning(mutex, turn, turn_flag):
 		
 		if len(gyro_arr) >= 500:
 			real_gyro = np.median(gyro_arr)
-			if real_gyro <= 2000 and real_gyro >= -2000:
+			if real_gyro >= 10 and real_gyro <= 900:
 				mutex.acquire()
 				turn.value = 0
 				mutex.release()
-			elif real_gyro > 2000:
+			elif real_gyro < 10:
 				mutex.acquire()
 				turn.value = turn.value + 1
 				mutex.release()
-			elif real_gyro < -2000:
+			elif real_gyro > 900:
 				mutex.acquire()
 				turn.value = turn.value - 1
 				mutex.release()
@@ -177,7 +177,7 @@ try:
 			#s.send(temp_dis)
 			#data = s.recv(1024)
 			#print(data)
-			#print(temp_dis)
+			print(temp_dis)
 			distance.value = 0
 			dis_flag.value = 0
 		mutex.release()
