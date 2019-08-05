@@ -75,8 +75,6 @@ while i <= 200:
     start = end
     i = i + 1
 
-print "Over"
-
 y = signal.lfilter(b, a, bes_arr)
 z = signal.lfilter(b, a, y)
 
