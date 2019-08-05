@@ -201,11 +201,13 @@ def walk():
 	
 def help1():
 	s.send(("HELP").ljust(16))
+	print("HELP")
 #	d = s.recv(1024)
 #	print(d)
 	time.sleep(1)
 def help2():
 	s.send(("HELP2").ljust(16))
+	print("HELP2")
 #	d = s.recv(1024)
 #	print(d)
 	time.sleep(1)
@@ -214,6 +216,7 @@ try:
 	while True:
 		if count == 0:
 			s.send(("aaaname").ljust(16));
+			print("aaaname")
 		#	d = s.recv(1024)
 		while count < 5:
 			print_no_move()
