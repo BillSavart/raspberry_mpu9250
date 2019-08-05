@@ -44,7 +44,7 @@ def read_gyro():
 	xout = read_word_2c(0x43)
 	yout = read_word_2c(0x45)
 	zout = read_word_2c(0x47)
-	return yout
+	return xout
 
 def read_bes_x():
 	bes_x = read_word_2c(0x3b)
@@ -98,19 +98,22 @@ def check_turning(mutex, turn, turn_flag):
 	global real_gyro
 	global stop_key
 	global f_bes
-	start = 0
-	gyro_arr = []
+	#start = 0
+	#gyro_arr = []
 	while True:
-		if start == 0:
-			start = time.time()
+	#	if start == 0:
+	#		start = time.time()
 
-		end = time.time()
-		time_inter = end - start
-
-		gyro_yout = read_gyro()
-		turn.value = (gyro_yout * 250.0 * time_inter) / 131.0
+	#	end = time.time()
+	#	time_inter = end - start
+#		print(time_inter)
+		
+	#	gyro_yout = read_gyro()
+	#	turn.value = (gyro_yout * 250.0 * time_inter) / 131.0
+		turn.value = read_gyro()
 		turn_flag.value = 1
-
+	#	start = end
+	#	time.sleep(1)
 		#print(mp.current_process())
 	#	temp_data = (read_gyro() * 250.0) / 131.0
 	#	gyro_arr.append(temp_data)
@@ -144,7 +147,7 @@ address = 0x68       # via i2cdetect
 bus.write_byte_data(address, power_mgmt_1, 0)
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-#s.connect((HOST,PORT))
+s.connect((HOST,PORT))
 
 mutex = mp.Lock()
 
@@ -169,14 +172,14 @@ try:
 				start_warning_time = time.time()
 			else:
 				if time.time() - start_warning_time >= 5 and time.time() - start_warning_time < 10:
-					#s.send("HELP")
+					s.send(("HELP").ljust(16))
 					#data = s.recv(1024)
 					#print(data)
 					print("HELP")
 					help_flag = True
 					pass
 				elif time.time() - start_warning_time >= 10:
-					#s.send("HELP2")
+					s.send(("HELP2").ljust(16))
 					#data = s.recv(1024)
 					#print(data)
 					print("HELP2")
@@ -189,7 +192,7 @@ try:
 		if (help_flag == False and dis_flag.value == 1) and turning_flag == False:
 			#print(distance.value)
 			temp_dis = str(distance.value)
-			#s.send(temp_dis)
+			s.send((temp_dis).ljust(16))
 			#data = s.recv(1024)
 			#print(data)
 			print(temp_dis)
@@ -200,22 +203,27 @@ try:
 		#send turning
 		if help_flag == False and turn_flag.value == 1:
 			mutex.acquire()
+			bes_for_gyro = read_bes_z()
 		#	turn.value = turn.value % 4
 			turning_flag = True
-			if turn.value >= -30000 and turn.value <= 30000:
+			if turn.value >= -10000 and turn.value <= 10000:
 				turning_flag = False
-				print(turn.value)
-				#s.send("No Turn")
+				#print("gyro: ",turn.value)
+				#print("bes: ", bes_for_gyro)
+				s.send(("No Turn").ljust(16))
+				#time.sleep(1)
 				#data = s.recv(1024)
 				#print(data)
-			#	print("No Turn")
+				print("No Turn")
+				#time.sleep(1)
 				
-			elif turn.value < -30000:
-				#s.send("Right")
+			elif turn.value < -10000:
+				s.send(("Left").ljust(16))
 				#data = s.recv(1024)
 				#print(data)
-				print("Right")
-				print(turn.value)
+				print("Left")
+				print("gyro: ", turn.value)
+				#print("bes: ", bes_for_gyro)
 				time.sleep(1)
 				
 			#elif turn.value > :
@@ -228,11 +236,12 @@ try:
 			#	print("RightRight")
 				
 			else:
-				#s.send("Left")
+				s.send(("Right").ljust(16))
 				#data = s.recv(1024)
 				#print(data)
-				print("Left")
-				print(turn.value)
+				print("Right")
+				print("gyro: ",turn.value)
+				#print("bes: ", bes_for_gyro)
 				time.sleep(1)
 				
 			turn.value = 0

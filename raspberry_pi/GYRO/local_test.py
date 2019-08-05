@@ -48,6 +48,24 @@ def read_bes_y():
     bes_y_ska = bes_y / 16384.0 * 9.8
     return bes_y_ska
 
+def read_gyro_x():
+	x = read_word_2c(0x43)
+	y = read_word_2c(0x45)
+	z = read_word_2c(0x47)
+	return x
+
+def read_gyro_y():
+	x = read_word_2c(0x43)
+	y = read_word_2c(0x45)
+	z = read_word_2c(0x47)
+	return y
+
+def read_gyro_z():
+	x = read_word_2c(0x43)
+	y = read_word_2c(0x45)
+	z = read_word_2c(0x47)
+	return z
+
 
 #main
 bus = smbus.SMBus(1) 
@@ -59,12 +77,15 @@ wn = 0.003
 b,a = signal.butter(order, wn, 'low')
 
 while True:
-	x = read_bes_x()
-	y = read_bes_y()
-	z = read_bes_z()
-	print("bes_x: ",x)
-	print("bes_y: ",y)
-	print("bes_z: ",z)
-	print("total_bes: ",math.sqrt(x*x+y*y+z*z)-9.8)
+#	x = read_bes_x()
+#	y = read_bes_y()
+#	z = read_bes_z()
+	x = read_gyro_x()
+	y = read_gyro_y()
+	z = read_gyro_z()
+	print("g_x: ",x)
+	print("g_y: ",y)
+	print("g_z: ",z)
+#	print("total_bes: ",math.sqrt(x*x+y*y+z*z)-9.8)
 	print('\n')
-	time.sleep(1)
+	#time.sleep(1)
