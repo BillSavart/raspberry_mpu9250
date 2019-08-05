@@ -19,6 +19,8 @@ help_flag = False
 real_bes = 0
 real_gyro = 0
 stop_key = False
+turning_flag = False
+
 f_bes = open('./normal_walk.txt', 'a')
 #f_gyro = open('no_turn' + str(index) + '.txt', 'a')
 
@@ -74,6 +76,7 @@ def get_bes(mutex, distance, dis_flag):
 		if len(bes_arr) >= 500:
 #			print(index)
 			real_bes = np.std(bes_arr)
+			print('real_bes: ', real_bes)
 			if real_bes <= 0.3 and real_bes > 0:
 				pass
 		#	elif real_bes > 0.5 and real_bes < 2:
@@ -104,15 +107,16 @@ def check_turning(mutex, turn, turn_flag):
 		
 		if len(gyro_arr) >= 500:
 			real_gyro = np.median(gyro_arr)
-			if real_gyro >= 10 and real_gyro <= 900:
+			print('gyro: ',real_gyro)
+			if real_gyro >= -1500 and real_gyro <= 1000:
 				mutex.acquire()
 				turn.value = 0
 				mutex.release()
-			elif real_gyro < 10:
+			elif real_gyro < -1500:
 				mutex.acquire()
 				turn.value = turn.value + 1
 				mutex.release()
-			elif real_gyro > 900:
+			elif real_gyro > 1000:
 				mutex.acquire()
 				turn.value = turn.value - 1
 				mutex.release()
@@ -171,7 +175,7 @@ try:
 
 		#send bes
 		mutex.acquire()
-		if help_flag == False and dis_flag.value == 1:
+		if (help_flag == False and dis_flag.value == 1) and turning_flag == False:
 			#print(distance.value)
 			temp_dis = str(distance.value)
 			#s.send(temp_dis)
@@ -186,7 +190,9 @@ try:
 		if help_flag == False and turn_flag.value == 1:
 			mutex.acquire()
 			turn.value = turn.value % 4
+			turning_flag = True
 			if turn.value == 0:
+				turning_flag = False
 				#s.send("No Turn")
 				#data = s.recv(1024)
 				#print(data)
@@ -215,7 +221,9 @@ try:
 				
 			turn.value = 0
 			turn_flag.value = 0
+			turing_flag = False
 			mutex.release()
+			print('')
 finally:
 	stop_key = True
 	#s.close()

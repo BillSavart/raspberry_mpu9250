@@ -1,6 +1,8 @@
+import numpy as np
 import smbus
 import time
 import math
+from scipy import signal
 
 # Register
 power_mgmt_1 = 0x6b
@@ -22,19 +24,47 @@ def read_word_2c(reg):
 	else:
 		return val
 
-def read_bes_y():
+def read_bes_z():
 	bes_x = read_word_2c(0x3b)
 	bes_y = read_word_2c(0x3d)
 	bes_z = read_word_2c(0x3f)
 
-	bes_y_ska = bes_y / 16384.0 * 9.8
-	return bes_y_ska
+	bes_z_ska = bes_z / 16384.0 * 9.8
+	return bes_z_ska
+
+def read_bes_x():
+    bes_x = read_word_2c(0x3b)
+    bes_y = read_word_2c(0x3d)
+    bes_z = read_word_2c(0x3f)
+
+    bes_x_ska = bes_x / 16384.0 * 9.8
+    return bes_x_ska
+
+def read_bes_y():
+    bes_x = read_word_2c(0x3b)
+    bes_y = read_word_2c(0x3d)
+    bes_z = read_word_2c(0x3f)
+
+    bes_y_ska = bes_y / 16384.0 * 9.8
+    return bes_y_ska
+
 
 #main
 bus = smbus.SMBus(1) 
 address = 0x68       # via i2cdetect
 bus.write_byte_data(address, power_mgmt_1, 0)
+order = 3
+wn = 0.003
+
+b,a = signal.butter(order, wn, 'low')
 
 while True:
-	bes = read_bes_y()
-	print("bes: ", bes)
+	x = read_bes_x()
+	y = read_bes_y()
+	z = read_bes_z()
+	print("bes_x: ",x)
+	print("bes_y: ",y)
+	print("bes_z: ",z)
+	print("total_bes: ",math.sqrt(x*x+y*y+z*z)-9.8)
+	print('\n')
+	time.sleep(1)
