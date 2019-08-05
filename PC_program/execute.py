@@ -62,8 +62,9 @@ def service_connection(key, mask,sel,img_fireman):
             print(str(data.addr[0]))
             print(connection_arr[0].ip_addr)
             for i in connection_arr:
+                print(i.id_num)
                 if(i.ip_addr == str(data.addr[0])):
-                    connection_num[i] = 0
+                    connection_num[i.id_num] = 0
 
             # Close Connection 的時候取消 Object
 #--------------------------------------------------------------------#
@@ -232,10 +233,10 @@ def main():
     img_fireman = cv2.imread("../IMAGE/fireman.png")
     img_fireman = cv2.resize(img_fireman,(50,50))
 
-    image = cv2.imread("../IMAGE/1f.png")
-    image1 = cv2.imread("../IMAGE/1f.png")
-    image2 = cv2.imread("../IMAGE/1f.png")
-    image3 = cv2.imread("../IMAGE/1f.png")
+    image = cv2.imread("../IMAGE/5f.png")
+    image1 = cv2.imread("../IMAGE/5f.png")
+    image2 = cv2.imread("../IMAGE/5f.png")
+    image3 = cv2.imread("../IMAGE/5f.png")
     image = np.hstack((image,image1))
     image1 = np.hstack((image2,image3))
     image = np.vstack((image,image1))
