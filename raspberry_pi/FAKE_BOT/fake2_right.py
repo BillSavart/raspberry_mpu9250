@@ -49,12 +49,12 @@ def walk():
     time.sleep(1)
 def help1():
     s.send(("HELP").ljust(16))
-	print("HELP")
+    print("HELP")
   #  d = s.recv(1024)
     time.sleep(1)
 def help2():
     s.send(("HELP2").ljust(16))
-	print("HELP2")
+    print("HELP2")
  #   d = s.recv(1024)
     time.sleep(1)
 

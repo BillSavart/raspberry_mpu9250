@@ -202,20 +202,18 @@ try:
 			mutex.acquire()
 		#	turn.value = turn.value % 4
 			turning_flag = True
-			if turn.value >= -30000 and turn.value <= 30000:
+			if turn.value >= -10000 and turn.value <= 10000:
 				turning_flag = False
-				print(turn.value)
 				#s.send("No Turn")
 				#data = s.recv(1024)
 				#print(data)
 			#	print("No Turn")
 				
-			elif turn.value < -30000:
+			elif turn.value < -10000:
 				#s.send("Right")
 				#data = s.recv(1024)
 				#print(data)
 				print("Right")
-				print(turn.value)
 				time.sleep(1)
 				
 			#elif turn.value > :
@@ -232,7 +230,6 @@ try:
 				#data = s.recv(1024)
 				#print(data)
 				print("Left")
-				print(turn.value)
 				time.sleep(1)
 				
 			turn.value = 0
