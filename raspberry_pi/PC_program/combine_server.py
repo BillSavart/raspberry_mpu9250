@@ -4,19 +4,15 @@ import types
 import numpy as np
 import cv2
 from client_struct import client
-import threading
 import time
 import keyboard
 import os
 
 ##### use "ifconfig" to find your ip
-#host = '192.168.208.126'
-#host = '192.168.208.102'
-#host = '192.168.208.140'
 host = '192.168.68.100'
 port = 8888
 
-window_name = 'Firefighter'
+window_name = 'Firefighter' # image_window_name
 ##### Default four element array
 client_list = [client(),client(),client(),client()]
 resize_height = 480+200
@@ -31,7 +27,7 @@ click_client = 0    ##### the client you click in window
 x_bound = 620   ##### window x axis bound
 y_bound = 340   ##### window y axis bound
 #---------------------------------------------------------#
-connection_num = np.zeros(4)
+connection_num = np.zeros(4) 
 inti_flag = -1
 image = []
 keep = []
