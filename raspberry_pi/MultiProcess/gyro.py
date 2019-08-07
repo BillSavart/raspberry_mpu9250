@@ -70,7 +70,7 @@ def get_bes(mutex, distance, dis_flag):
 		bes_arr.append(temp_data)
 		if len(bes_arr) >= 500:
 			real_bes = np.std(bes_arr)
-			print('real_bes: ', real_bes)
+			#print('real_bes: ', real_bes)
 			mutex.acquire()
 			if (real_bes <= 0.3 and real_bes > 0):
 				distance.value = 0.0
@@ -122,6 +122,8 @@ p1 = mp.Process(target=check_turning, args=(mutex, turn, turn_flag))
 p.start()
 p1.start()
 
+delay = 0
+
 try:
 	while True:
 		#check if falling
@@ -169,7 +171,9 @@ try:
 			s.send((temp_dis).ljust(16))
 			print(temp_dis)
 			distance.value = 0
-			time.sleep(1)
+			while delay < 100000:
+				delay += 1
+			delay = 0
 		else:
 			distance.value = 0
 		turning_flag = False
