@@ -5,7 +5,7 @@ import socket
 import numpy as np
 import multiprocessing as mp
 
-HOST = '192.168.68.100'
+HOST = '192.168.208.105'
 PORT = 8888
 
 # Register
@@ -20,9 +20,6 @@ real_bes = 0
 real_gyro = 0
 stop_key = False
 turning_flag = False
-
-#f_bes = open('./normal_walk.txt', 'a')
-#f_gyro = open('no_turn' + str(index) + '.txt', 'a')
 
 def read_byte(reg):
 	return bus.read_byte_data(address, reg)
@@ -65,27 +62,22 @@ def read_bes_z():
 def get_bes(mutex, distance, dis_flag):
 	global real_bes
 	global stop_key
+	global help_flag
 	bes_arr = []
-	global f_bes
+
 	while True:
 		temp_data = read_bes_z()
 		bes_arr.append(temp_data)
-#		f_bes.write(str(temp_data)+'\n')
 		if len(bes_arr) >= 500:
 			real_bes = np.std(bes_arr)
 			print('real_bes: ', real_bes)
-			if real_bes <= 0.3 and real_bes > 0:
-				pass
-		#	elif real_bes > 0.5 and real_bes < 2:
-		#		mutex.acquire()
-		#		distance.value = distance.value + 0.1
-		#		mutex.release()
+			mutex.acquire()
+			if (real_bes <= 0.3 and real_bes > 0):
+				distance.value = 0.0
 			else:
-				mutex.acquire()
-				distance.value = distance.value + 0.2
-				mutex.release()
+				distance.value = distance.value + 1.2
+			mutex.release()
 			bes_arr = []
-			dis_flag.value = 1
 
 		if stop_key == True:
 			break
@@ -93,48 +85,17 @@ def get_bes(mutex, distance, dis_flag):
 def check_turning(mutex, turn, turn_flag):
 	global real_gyro
 	global stop_key
-	global f_bes
-	#start = 0
-	#gyro_arr = []
-
 	while True:
-	#	if start == 0:
-	#		start = time.time()
-
-	#	end = time.time()
-	#	time_inter = end - start
-#		print(time_inter)
-		
-	#	gyro_yout = read_gyro()
-	#	turn.value = (gyro_yout * 250.0 * time_inter) / 131.0
 		turn.value = read_gyro()
-		turn_flag.value = 1
-	#	start = end
-	#	time.sleep(1)
-		#print(mp.current_process())
-	#	temp_data = (read_gyro() * 250.0) / 131.0
-	#	gyro_arr.append(temp_data)
-		#f_bes.write(str(temp_data)+'\n')
+		mutex.acquire()
+		if turn.value >= -10000 and turn.value <= 10000:
+			turn_flag.value = 0 #no turn
+		elif turn.value < -10000:
+			turn_flag.value = 1 #left
+		else:
+			turn_flag.value = 2 #right
+		mutex.release()
 		
-	#	if len(gyro_arr) >= 500:
-	#		real_gyro = np.median(gyro_arr)
-	#		print('gyro: ',real_gyro)
-	#		if real_gyro >= -1500 and real_gyro <= 1000:
-	#			mutex.acquire()
-	#			turn.value = 0
-	#			mutex.release()
-	#		elif real_gyro < -1500:
-	#			mutex.acquire()
-	#			turn.value = turn.value + 1
-	#			mutex.release()
-	#		elif real_gyro > 1000:
-				#mutex.acquire()
-	#			turn.value = turn.value - 1
-	#			mutex.release()
-	#		else:
-	#			pass
-	#		turn_flag.value = 1
-	#		gyro_arr = []
 		if stop_key == True:
 			break
 
@@ -144,8 +105,10 @@ address = 0x68       # via i2cdetect
 bus.write_byte_data(address, power_mgmt_1, 0)
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-#s.connect((HOST,PORT))
+s.connect((HOST,PORT))
 
+s.send(("Mark").ljust(16))
+s.send(("0.0").ljust(16))
 mutex = mp.Lock()
 
 distance = mp.Value("d", 0)
@@ -168,75 +131,48 @@ try:
 				start_warning_time = time.time()
 			else:
 				if time.time() - start_warning_time >= 5 and time.time() - start_warning_time < 10:
-					#s.send(("HELP").ljust(16))
+					s.send(("HELP").ljust(16))
 					print("HELP")
 					help_flag = True
 				elif time.time() - start_warning_time >= 10:
-					#s.send(("HELP2").ljust(16))
+					s.send(("HELP2").ljust(16))
 					print("HELP2")
 		else:
 			start_warning_time = 0
 			help_flag = False
 
-		#send bes
-		mutex.acquire()
-		if (help_flag == False and dis_flag.value == 1) and turning_flag == False:
-			temp_dis = str(distance.value)
-			#s.send((temp_dis).ljust(16))
-			print(temp_dis)
-			distance.value = 0
-			dis_flag.value = 0
-		mutex.release()
-
 		#send turning
-		if help_flag == False and turn_flag.value == 1:
-			mutex.acquire()
-			bes_for_gyro = read_bes_z()
-		#	turn.value = turn.value % 4
-			turning_flag = True
-			if turn.value >= -10000 and turn.value <= 10000:
+		if help_flag == False:
+			if turn_flag.value == 0:
 				turning_flag = False
-				#print("gyro: ",turn.value)
-				#print("bes: ", bes_for_gyro)
-				#s.send(("No Turn").ljust(16))
-				#time.sleep(1)
-				#data = s.recv(1024)
-				#print(data)
-			#	print("No Turn")
-				#time.sleep(1)
 				
-			elif turn.value < -10000:
-				#s.send(("Left").ljust(16))
-				#data = s.recv(1024)
-				#print(data)
+			elif turn_flag.value == 1:
+				turning_flag = True
+				s.send(("Left").ljust(16))
 				print("Left")
-				#print("gyro: ", turn.value)
-				#print("bes: ", bes_for_gyro)
-				#time.sleep(1)
-				
-			#elif turn.value > :
-				#s.send("Right")
-				#data = s.recv(1024)
-				#print(data)
-				#s.send("Right")
-				#data = s.recv(1024)
-				#print(data)
-			#	print("RightRight")
-				
+				time.sleep(1)
+
 			else:
-				#s.send(("Right").ljust(16))
-				#data = s.recv(1024)
-				#print(data)
+				turning_flag = True
+				s.send(("Right").ljust(16))
 				print("Right")
-				#print("gyro: ",turn.value)
-				#print("bes: ", bes_for_gyro)
-				#time.sleep(1)
-				
+				time.sleep(1)
+
 			turn.value = 0
 			turn_flag.value = 0
-			turing_flag = False
-			mutex.release()
-		#	print('')
+		else:
+			turn.value = 0
+			turn_flag.value = 0
+
+		if turning_flag == False and help_flag == False:
+			temp_dis = str(distance.value)
+			s.send((temp_dis).ljust(16))
+			print(temp_dis)
+			distance.value = 0
+			time.sleep(1)
+		else:
+			distance.value = 0
+		turning_flag = False
 finally:
 	stop_key = True
 	#s.close()
