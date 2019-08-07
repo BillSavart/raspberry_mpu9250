@@ -21,7 +21,7 @@ real_gyro = 0
 stop_key = False
 turning_flag = False
 
-f_bes = open('./normal_walk.txt', 'a')
+#f_bes = open('./normal_walk.txt', 'a')
 #f_gyro = open('no_turn' + str(index) + '.txt', 'a')
 
 def read_byte(reg):
@@ -66,15 +66,12 @@ def get_bes(mutex, distance, dis_flag):
 	global real_bes
 	global stop_key
 	bes_arr = []
-	index = 1
 	global f_bes
 	while True:
-		#print(mp.current_process())
 		temp_data = read_bes_z()
 		bes_arr.append(temp_data)
 #		f_bes.write(str(temp_data)+'\n')
 		if len(bes_arr) >= 500:
-#			print(index)
 			real_bes = np.std(bes_arr)
 			print('real_bes: ', real_bes)
 			if real_bes <= 0.3 and real_bes > 0:
@@ -89,8 +86,7 @@ def get_bes(mutex, distance, dis_flag):
 				mutex.release()
 			bes_arr = []
 			dis_flag.value = 1
-			#index = index + 1
-	#		print(index)
+
 		if stop_key == True:
 			break
 
@@ -100,6 +96,7 @@ def check_turning(mutex, turn, turn_flag):
 	global f_bes
 	#start = 0
 	#gyro_arr = []
+
 	while True:
 	#	if start == 0:
 	#		start = time.time()
@@ -147,7 +144,7 @@ address = 0x68       # via i2cdetect
 bus.write_byte_data(address, power_mgmt_1, 0)
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-s.connect((HOST,PORT))
+#s.connect((HOST,PORT))
 
 mutex = mp.Lock()
 
@@ -164,7 +161,6 @@ p1.start()
 
 try:
 	while True:
-		#print(mp.current_process())
 		#check if falling
 		bes_xout = read_bes_x()
 		if bes_xout > -6.0:
@@ -172,16 +168,11 @@ try:
 				start_warning_time = time.time()
 			else:
 				if time.time() - start_warning_time >= 5 and time.time() - start_warning_time < 10:
-					s.send(("HELP").ljust(16))
-					#data = s.recv(1024)
-					#print(data)
+					#s.send(("HELP").ljust(16))
 					print("HELP")
 					help_flag = True
-					pass
 				elif time.time() - start_warning_time >= 10:
-					s.send(("HELP2").ljust(16))
-					#data = s.recv(1024)
-					#print(data)
+					#s.send(("HELP2").ljust(16))
 					print("HELP2")
 		else:
 			start_warning_time = 0
@@ -190,11 +181,8 @@ try:
 		#send bes
 		mutex.acquire()
 		if (help_flag == False and dis_flag.value == 1) and turning_flag == False:
-			#print(distance.value)
 			temp_dis = str(distance.value)
-			s.send((temp_dis).ljust(16))
-			#data = s.recv(1024)
-			#print(data)
+			#s.send((temp_dis).ljust(16))
 			print(temp_dis)
 			distance.value = 0
 			dis_flag.value = 0
@@ -210,21 +198,21 @@ try:
 				turning_flag = False
 				#print("gyro: ",turn.value)
 				#print("bes: ", bes_for_gyro)
-				s.send(("No Turn").ljust(16))
+				#s.send(("No Turn").ljust(16))
 				#time.sleep(1)
 				#data = s.recv(1024)
 				#print(data)
-				print("No Turn")
+			#	print("No Turn")
 				#time.sleep(1)
 				
 			elif turn.value < -10000:
-				s.send(("Left").ljust(16))
+				#s.send(("Left").ljust(16))
 				#data = s.recv(1024)
 				#print(data)
 				print("Left")
-				print("gyro: ", turn.value)
+				#print("gyro: ", turn.value)
 				#print("bes: ", bes_for_gyro)
-				time.sleep(1)
+				#time.sleep(1)
 				
 			#elif turn.value > :
 				#s.send("Right")
@@ -236,13 +224,13 @@ try:
 			#	print("RightRight")
 				
 			else:
-				s.send(("Right").ljust(16))
+				#s.send(("Right").ljust(16))
 				#data = s.recv(1024)
 				#print(data)
 				print("Right")
-				print("gyro: ",turn.value)
+				#print("gyro: ",turn.value)
 				#print("bes: ", bes_for_gyro)
-				time.sleep(1)
+				#time.sleep(1)
 				
 			turn.value = 0
 			turn_flag.value = 0
