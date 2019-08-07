@@ -75,7 +75,7 @@ def get_bes(mutex, distance, dis_flag):
 			if (real_bes <= 0.3 and real_bes > 0):
 				distance.value = 0.0
 			else:
-				distance.value = distance.value + 1.2
+				distance.value = distance.value + 0.8
 			mutex.release()
 			bes_arr = []
 
