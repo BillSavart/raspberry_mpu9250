@@ -5,7 +5,7 @@ import socket
 import numpy as np
 import multiprocessing as mp
 
-HOST = '192.168.208.105'
+HOST = '192.168.208.121'
 PORT = 8888
 
 # Register
@@ -125,6 +125,7 @@ p1.start()
 delay = 0
 
 try:
+	delay_times = 0
 	while True:
 		#check if falling
 		bes_xout = read_bes_x()
@@ -176,7 +177,11 @@ try:
 			delay = 0
 		else:
 			distance.value = 0
-		turning_flag = False
+		if delay_times == 10:
+			turning_flag = False
+			delay_times = 0
+		else:
+			delay_times += 1
 finally:
 	stop_key = True
 	#s.close()
