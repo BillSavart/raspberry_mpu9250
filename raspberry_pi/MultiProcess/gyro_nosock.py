@@ -1,11 +1,12 @@
 #Fix Problem
-#	 1. eliminate walk right after turn
-#	 2. fix the problem cannot turn immediately after a turn
-#	 3. change loop delay to time.sleep
-#	 4. cancel if turning_flag == false in the walking if
-#	 5. ensure eliminate the floating data after back from help
-#	 6. delete the floating data for 5 sec before help data appear
-
+#	o 1. eliminate walk right after turn
+#	o 2. fix the problem cannot turn immediately after a turn
+#	o 3. change loop delay to time.sleep
+#	o 4. cancel if turning_flag == false in the walking if
+#	  5. ensure eliminate the floating data after back from help
+#	  6. delete the floating data for 5 sec before help data appear
+#     7. start_help too sensitive
+#     8. need to wait for the delay before turning
 # More To Fix
 
 import socket
@@ -80,12 +81,14 @@ def get_bes(mutex, distance, dis_flag):
 		bes_arr.append(temp_data)
 		if len(bes_arr) >= 500:
 			real_bes = np.std(bes_arr)
-			#print('real_bes: ', real_bes)
+			print('process_real_bes: ', real_bes)
 			mutex.acquire()
-			if (real_bes <= 0.3 and real_bes > 0):
+			if (real_bes <= 0.3 and real_bes > 0.0):
 				distance.value += 0.0
-			else:
+			elif (real_bes > 0.3 and real_bes <= 2.0):
 				distance.value = distance.value + 1.3
+			else:
+				distance.value = distance.value + 2.0
 			mutex.release()
 			bes_arr = []
 			#print(distance.value)
@@ -136,9 +139,9 @@ s.connect((HOST,PORT))
 s.send((("Stark").encode()).ljust(16))
 print("Stark")
 time.sleep(1)
-s.send((("0.0").encode()).ljust(16))
-print("0.0")
-time.sleep(3)
+#s.send((("0.0").encode()).ljust(16))
+#print("0.0")
+#time.sleep(3)
 s.send((("0.0").encode()).ljust(16))
 print("0.0")
 
@@ -148,11 +151,13 @@ try:
 		#check if falling
 		bes_xout = read_bes_x()
 		#print("help: ", bes_xout)
-		if bes_xout > -4.0:
+		#time.sleep(1)
+		if bes_xout > -3.0 and distance.value <= 2.0:
 			help_wait_time = time.time()
 			if start_warning_time == 0:
 				start_warning_time = time.time()
-				print("START HELP")
+				print("HELP_BES: ", distance.value)
+				#print("START HELP")
 				time.sleep(1)
 			else:
 				if time.time() - start_warning_time >= 5 and time.time() - start_warning_time < 10:
@@ -195,7 +200,7 @@ try:
 			turn.value = 0
 			turn_flag.value = 0
 
-		if help_flag == False and time.time() - turn_wait_time > 2 and time.time() - help_wait_time > 2 and distance.value != 0:
+		if help_flag == False and time.time() - turn_wait_time > 1 and time.time() - help_wait_time > 2 and distance.value != 0:
 			temp_dis = str(distance.value)
 			s.send(((temp_dis).encode()).ljust(16))
 			print(temp_dis)
