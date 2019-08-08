@@ -16,7 +16,7 @@ import numpy as np
 import multiprocessing as mp
 
 HOST = '192.168.208.108'
-PORT = 8888
+PORT = 8887
 
 # Register
 power_mgmt_1 = 0x6b
@@ -85,7 +85,7 @@ def get_bes(mutex, distance, dis_flag):
 			if (real_bes <= 0.3 and real_bes > 0):
 				distance.value += 0.0
 			else:
-				distance.value = distance.value + 0.8
+				distance.value = distance.value + 1.3
 			mutex.release()
 			bes_arr = []
 			#print(distance.value)
@@ -133,8 +133,14 @@ help_wait_time = 0
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.connect((HOST,PORT))
 
-s.send(("TonyStark").ljust(16))
-s.send(("0.0").ljust(16))
+s.send((("Stark").encode()).ljust(16))
+print("Stark")
+time.sleep(1)
+s.send((("0.0").encode()).ljust(16))
+print("0.0")
+time.sleep(3)
+s.send((("0.0").encode()).ljust(16))
+print("0.0")
 
 try:
 	delay_times = 0
@@ -150,11 +156,11 @@ try:
 				time.sleep(1)
 			else:
 				if time.time() - start_warning_time >= 5 and time.time() - start_warning_time < 10:
-					s.send(("HELP").ljust(16))
+					s.send((("HELP").encode()).ljust(16))
 					print("HELP")
 					help_flag = True
 				elif time.time() - start_warning_time >= 10:
-					s.send(("HELP2").ljust(16))
+					s.send((("HELP2").encode()).ljust(16))
 					print("HELP2")
 		else:
 			start_warning_time = 0
@@ -168,14 +174,14 @@ try:
 				
 			elif turn_flag.value == 1 and time.time() - help_wait_time > 2:
 				turning_flag = True
-				s.send(("Left").ljust(16))
+				s.send((("Left").encode()).ljust(16))
 				print("Left")
 				time.sleep(1)
 				turn_wait_time = time.time()
 				help_wait_time = 0
 			elif time.time() - help_wait_time > 2:
 				turning_flag = True
-				s.send(("Right").ljust(16))
+				s.send((("Right").encode()).ljust(16))
 				print("Right")
 				time.sleep(1)
 				turn_wait_time = time.time()
@@ -191,7 +197,7 @@ try:
 
 		if help_flag == False and time.time() - turn_wait_time > 2 and time.time() - help_wait_time > 2 and distance.value != 0:
 			temp_dis = str(distance.value)
-			s.send((temp_dis).ljust(16))
+			s.send(((temp_dis).encode()).ljust(16))
 			print(temp_dis)
 			distance.value = 0
 			time.sleep(0.15)
