@@ -15,8 +15,8 @@ import math
 import numpy as np
 import multiprocessing as mp
 
-HOST = '192.168.208.108'
-PORT = 8887
+HOST = '192.168.68.100'
+PORT = 8888
 
 # Register
 power_mgmt_1 = 0x6b
@@ -78,9 +78,9 @@ def get_bes(mutex, distance, dis_flag):
 	while True:
 		temp_data = read_bes_z()
 		bes_arr.append(temp_data)
-		if len(bes_arr) >= 500:
+		if len(bes_arr) >= 100:
 			real_bes = np.std(bes_arr)
-			#print('real_bes: ', real_bes)
+			print('real_bes: ', real_bes)
 			mutex.acquire()
 			if (real_bes <= 0.3 and real_bes > 0):
 				distance.value += 0.0
