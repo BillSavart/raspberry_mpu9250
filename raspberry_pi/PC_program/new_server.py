@@ -7,11 +7,12 @@ from client_struct import client
 import time
 import keyboard
 import os
+import time
 
 ##### socket connection: use "ifconfig" to find your ip
 host = '192.168.68.100'
 #host = '192.168.208.108'
-port = 6666
+port = 6667
 
 ##### windows defined
 img_window_name = 'Firefighter' # image_window_name
@@ -41,6 +42,9 @@ middle_y = 700
 init_time = 0
 fireman_image_path = "../IMAGE/fireman.png"
 environment_image_path = "../IMAGE/1f.png"
+info_flag = -1
+time_press = 0
+info_image = np.zeros((800,800,3), np.uint8)
 
 def emergency_cancel(event, x, y, flags, param):
     global click_to_cancel,click_client
@@ -151,6 +155,7 @@ def service_connection(key, mask):
                                     i.fire_num = recv_data_msg[4:len(recv_data_msg)]
                                     #print(i.fire_num)
                                 else:
+                                    print("id: ",i.id_num)
                                     print(recv_data_msg)
                                     drawNewSpot(recv_data_msg,i.id_num,img_fireman)                    
                                 break
@@ -211,104 +216,44 @@ def drawNewSpot(data,index,img_fireman):
     down_spot_y = middle_y + (middle_y)*(index >= 2)
    
     client_list[index].color_set = (0,139,0)
-#    cv2.line(image,(left_spot_x,up_spot_y),(right_spot_x,up_spot_y),client_list[index].color_set,10,6)
-#    cv2.line(image,(left_spot_x,down_spot_y),(right_spot_x,down_spot_y),client_list[index].color_set,10,6)
-#    cv2.line(image,(left_spot_x,up_spot_y),(left_spot_x,down_spot_y),client_list[index].color_set,10,6)
-#    cv2.line(image,(right_spot_x,up_spot_y),(right_spot_x,down_spot_y),client_list[index].color_set,10,6)
-    if(index == 0):
-        cv2.line(image,(5,5),(middle_x,5),(0,139,0),10,6)
-        cv2.line(image,(5,middle_y),(middle_x,middle_y),(0,139,0),10,6)
-        cv2.line(image,(5,5),(5,middle_y),(0,139,0),10,6)
-        cv2.line(image,(middle_x,5),(middle_x,middle_y),(0,139,0),10,6)
-    elif (index == 1):
-        cv2.line(image,(middle_x,5),(middle_x*2,5),(0,139,0),10,6)   
-        cv2.line(image,(middle_x,middle_y),(middle_x*2,middle_y),(0,139,0),10,6)
-        cv2.line(image,(middle_x*2,5),(middle_x*2,middle_y),(0,139,0),10,6)
-        cv2.line(image,(middle_x,5),(middle_x,middle_y),(0,139,0),10,6)
-    elif(index == 2):
-        cv2.line(image,(5,middle_y),(5,middle_y*2),(0,139,0),10,6)
-        cv2.line(image,(middle_x,middle_y),(middle_x,middle_y*2),(0,139,0),10,6)
-        cv2.line(image,(5,middle_y),(middle_x,middle_y),(0,139,0),10,6)
-        cv2.line(image,(5,middle_y*2),(middle_x,middle_y*2),(0,139,0),10,6)
-    elif(index == 3):
-        cv2.line(image,(middle_x,middle_y),(middle_x*2,middle_y),(0,139,0),10,6)
-        cv2.line(image,(middle_x,middle_y*2),(middle_x*2,middle_y*2),(0,139,0),10,6)
-        cv2.line(image,(middle_x,middle_y),(middle_x,middle_y*2),(0,139,0),10,6)
-        cv2.line(image,(middle_x*2,middle_y),(middle_x*2,middle_y*2),(0,139,0),10,6)
-    else:
-        pass
+    cv2.line(image,(left_spot_x,up_spot_y),(right_spot_x,up_spot_y),client_list[index].color_set,10,6)
+    cv2.line(image,(left_spot_x,down_spot_y),(right_spot_x,down_spot_y),client_list[index].color_set,10,6)
+    cv2.line(image,(left_spot_x,up_spot_y),(left_spot_x,down_spot_y),client_list[index].color_set,10,6)
+    cv2.line(image,(right_spot_x,up_spot_y),(right_spot_x,down_spot_y),client_list[index].color_set,10,6)
 
     if("No Turn" in data):
          #print("index:",index)
-        client_list[index].color_set = (0,139,0)
         client_list[index].addNewPosition("No Turn",0)
     elif("Left" in data):
-        client_list[index].color_set = (0,139,0)
         client_list[index].addNewPosition("Left",0)
     elif("Right" in data):
-        client_list[index].color_set = (0,139,0)
         client_list[index].addNewPosition("Right",0)
     else:
-        client_list[index].color_set = (0,139,0)
         client_list[index].addNewPosition("No Turn",float(data))
     refresh_map = True
     #print('refresh')
     for i in range(4):
         image[client_list[i].position_y-25 : client_list[i].position_y + 25 , client_list[i].position_x-25 : client_list[i].position_x + 25] = img_fireman
 
-def helpConditionExec(message,num):
+def helpConditionExec(message,index):
     global image,refresh_map
     if("HELP2" in message):
-        #print(num)
-        client_list[num].color_set = (0,0,255)
-        if(num == 0):
-            cv2.line(image,(5,5),(middle_x,5),(0,0,255),10,6)
-            cv2.line(image,(5,middle_y),(middle_x,middle_y),(0,0,255),10,6)
-            cv2.line(image,(5,5),(5,middle_y),(0,0,255),10,6)
-            cv2.line(image,(middle_x,5),(middle_x,middle_y),(0,0,255),10,6)
-        elif (num == 1):
-            cv2.line(image,(middle_x,5),(middle_x*2,5),(0,0,255),10,6) 
-            cv2.line(image,(middle_x,middle_y),(middle_x*2,middle_y),(0,0,255),10,6)
-            cv2.line(image,(middle_x*2,5),(middle_x*2,middle_y),(0,0,255),10,6)
-            cv2.line(image,(middle_x,5),(middle_x,middle_y),(0,0,255),10,6)
-        elif(num == 2):                                    
-            cv2.line(image,(5,middle_y),(5,middle_y*2),(0,0,255),10,6) 
-            cv2.line(image,(middle_x,middle_y),(middle_x,middle_y*2),(0,0,255),10,6)
-            cv2.line(image,(5,middle_y),(middle_x,middle_y),(0,0,255),10,6)
-            cv2.line(image,(5,middle_y*2),(middle_x,middle_y*2),(0,0,255),10,6)
-        elif(num == 3): 
-            cv2.line(image,(middle_x,middle_y),(middle_x*2,middle_y),(0,0,255),10,6)
-            cv2.line(image,(middle_x,middle_y*2),(middle_x*2,middle_y*2),(0,0,255),10,6)
-            cv2.line(image,(middle_x,middle_y),(middle_x,middle_y*2),(0,0,255),10,6)
-            cv2.line(image,(middle_x*2,middle_y),(middle_x*2,middle_y*2),(0,0,255),10,6)
-        else:    
-            pass 
-    elif ("HELP" in message):
-        client_list[num].color_set = (0,165,255)
-        if(num == 0):
-            cv2.line(image,(5,5),(middle_x,5),(0,165,255),10,6)
-            cv2.line(image,(5,middle_y),(middle_x,middle_y),(0,165,255),10,6)
-            cv2.line(image,(5,5),(5,middle_y),(0,165,255),10,6)
-            cv2.line(image,(middle_x,5),(middle_x,middle_y),(0,165,255),10,6)
-        elif (num == 1):
-            cv2.line(image,(middle_x,5),(middle_x*2,5),(0,165,255),10,6) 
-            cv2.line(image,(middle_x,middle_y),(middle_x*2,middle_y),(0,165,255),10,6)
-            cv2.line(image,(middle_x*2,5),(middle_x*2,middle_y),(0,165,255),10,6)
-            cv2.line(image,(middle_x,5),(middle_x,middle_y),(0,165,255),10,6)
-        elif(num == 2):                                    
-            cv2.line(image,(5,middle_y),(5,middle_y*2),(0,165,255),10,6) 
-            cv2.line(image,(middle_x,middle_y),(middle_x,middle_y*2),(0,165,255),10,6)
-            cv2.line(image,(5,middle_y),(middle_x,middle_y),(0,165,255),10,6)
-            cv2.line(image,(5,middle_y*2),(middle_x,middle_y*2),(0,165,255),10,6)
-        elif(num == 3): 
-            cv2.line(image,(middle_x,middle_y),(middle_x*2,middle_y),(0,165,255),10,6)
-            cv2.line(image,(middle_x,middle_y*2),(middle_x*2,middle_y*2),(0,165,255),10,6)
-            cv2.line(image,(middle_x,middle_y),(middle_x,middle_y*2),(0,165,255),10,6)
-            cv2.line(image,(middle_x*2,middle_y),(middle_x*2,middle_y*2),(0,165,255),10,6)
-        else:    
-            pass 
+        client_list[index].color_set = (0,0,255)
+    elif("HELP" in message):
+        client_list[index].color_set = (0,165,255)
     else:
-       pass
+        pass
+
+    left_spot_x = 5 + (middle_x-5)*(index%2)
+    right_spot_x = middle_x + middle_x*(index%2)
+    up_spot_y = 5 + (middle_y-5)*(index >= 2)
+    down_spot_y = middle_y + (middle_y)*(index >= 2)
+
+    cv2.line(image,(left_spot_x,up_spot_y),(right_spot_x,up_spot_y),client_list[index].color_set,10,6)
+    cv2.line(image,(left_spot_x,down_spot_y),(right_spot_x,down_spot_y),client_list[index].color_set,10,6)
+    cv2.line(image,(left_spot_x,up_spot_y),(left_spot_x,down_spot_y),client_list[index].color_set,10,6)
+    cv2.line(image,(right_spot_x,up_spot_y),(right_spot_x,down_spot_y),client_list[index].color_set,10,6)
+    
     refresh_map = True
 
 def addNewPoint(event,x,y,flags,param):
@@ -332,12 +277,11 @@ def addNewPoint(event,x,y,flags,param):
                     client_list[inti_flag].direction = 180
                 else:
                     client_list[inti_flag].direction = 0
-            #print ("dir: ",client_list[inti_flag].direction)
+            print("inti:",inti_flag)
+            print ("pos: ",(client_list[inti_flag].position_x,client_list[inti_flag].position_y))
+            print ("dir: ",client_list[inti_flag].direction)
             inti_flag = -1
 
-def show_info():
-    print("ya")
-#    os.system("sudo python3 show_info.py")    
 
 if __name__ == "__main__":
     img_fireman = []
@@ -365,6 +309,8 @@ if __name__ == "__main__":
     print("Setting Windows...")
     cv2.namedWindow(map_window_name,0)
     cv2.setWindowProperty(map_window_name,cv2.WND_PROP_FULLSCREEN,cv2.WINDOW_FULLSCREEN )
+    cv2.namedWindow(info_window_name,0)
+    cv2.setWindowProperty(info_window_name,cv2.WND_PROP_FULLSCREEN,cv2.WINDOW_FULLSCREEN)
     
     print("Drawing Security Line...")
     image = cv2.line(image,(5,5),(middle_x*2,5),(0,139,0),10,6)
@@ -398,8 +344,26 @@ if __name__ == "__main__":
         print("Waiting For Connection...")
         while True:
             #---------------------------------#
-   #         if(keyboard.is_pressed('i')):
-    #            show_info()
+            if(keyboard.is_pressed('1') and time.time() - time_press > 1):
+                time_press = time.time()
+                info_flag = (info_flag != 0)*1 - 1
+                print("pressed 1 , info_flag: ",info_flag)
+            elif(keyboard.is_pressed('2') and time.time() - time_press > 1):
+                time_press = time.time()
+                info_flag = (info_flag != 1)*2 - 1
+                print("pressed 2 , info_flag: ",info_flag)
+            elif(keyboard.is_pressed('3') and time.time() - time_press > 1):
+                time_press = time.time()
+                info_flag = (info_flag != 2)*3 - 1
+                print("pressed 3 , info _flag: ",info_flag)
+            elif(keyboard.is_pressed('4') and time.time() - time_press > 1):
+                time_press = time.time()
+                info_flag = (info_flag != 3)*4 - 1
+                print("pressed 4 , info_flag: ",info_flag)
+            else:
+                pass
+            
+            info_image = np.zeros((800,800,3),np.uint8)
             #---------------------------------#
             events = sel.select(timeout=None)
             for key, mask in events:
@@ -407,7 +371,8 @@ if __name__ == "__main__":
                     accept_wrapper(key.fileobj)
                 else:
                     service_connection(key, mask)
-                    if(refresh_img or refresh_map):
+                    
+                    if(refresh_img or refresh_map or info_flag >= 0):
                         if(refresh_img):
                             refresh_img = False
                             ##### concate and plot image
@@ -429,6 +394,14 @@ if __name__ == "__main__":
                             '''
                             # Show 我們的圖
                             #-----------------------------------------------------------------#
+                        ###
+                        if(info_flag >= 0):
+                            cv2.putText(info_image,"Name: "+str(client_list[info_flag].name), (10, 40), cv2.FONT_HERSHEY_SIMPLEX,1, (0, 255, 255), 1, cv2.LINE_AA)
+                            cv2.putText(info_image,"Number: "+str(client_list[info_flag].fire_num), (10, 60), cv2.FONT_HERSHEY_SIMPLEX,1, (0, 255, 255), 1, cv2.LINE_AA)
+                            cv2.putText(info_image,"Time Pass: "+str(client_list[info_flag].time_pass), (10, 80), cv2.FONT_HERSHEY_SIMPLEX,1, (0, 255, 255), 1, cv2.LINE_AA)
+                        cv2.imshow(info_window_name,info_image)                        
+                        ###
+ 
                         if cv2.waitKey(1) & 0xFF == ord('q'):
                             break
                     if(click_to_cancel):
