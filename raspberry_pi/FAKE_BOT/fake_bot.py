@@ -469,7 +469,9 @@ print("0.0")
 time.sleep(1)
 s.send((("0.0").encode()).ljust(16))
 print("0.0")
-time.sleep(5)
+
+print("click the map, hurry up!!")
+time.sleep(10)
 
 while True:
 	r = random.randint(1,7)
