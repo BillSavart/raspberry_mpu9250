@@ -12,7 +12,7 @@ import time
 ##### socket connection: use "ifconfig" to find your ip
 host = '192.168.68.100'
 #host = '192.168.208.108'
-port = 6666
+port = 6667
 
 ##### windows defined
 img_window_name = 'Firefighter' # image_window_name
@@ -44,6 +44,7 @@ fireman_image_path = "../IMAGE/fireman.png"
 environment_image_path = "../IMAGE/1f.png"
 info_flag = -1
 time_press = 0
+info_image = np.zeros((800,800,3), np.uint8)
 
 def emergency_cancel(event, x, y, flags, param):
     global click_to_cancel,click_client
@@ -154,6 +155,7 @@ def service_connection(key, mask):
                                     i.fire_num = recv_data_msg[4:len(recv_data_msg)]
                                     #print(i.fire_num)
                                 else:
+                                    print("id: ",i.id_num)
                                     print(recv_data_msg)
                                     drawNewSpot(recv_data_msg,i.id_num,img_fireman)                    
                                 break
@@ -275,7 +277,9 @@ def addNewPoint(event,x,y,flags,param):
                     client_list[inti_flag].direction = 180
                 else:
                     client_list[inti_flag].direction = 0
-            #print ("dir: ",client_list[inti_flag].direction)
+            print("inti:",inti_flag)
+            print ("pos: ",(client_list[inti_flag].position_x,client_list[inti_flag].position_y))
+            print ("dir: ",client_list[inti_flag].direction)
             inti_flag = -1
 
 
@@ -306,6 +310,7 @@ if __name__ == "__main__":
     cv2.namedWindow(map_window_name,0)
     cv2.setWindowProperty(map_window_name,cv2.WND_PROP_FULLSCREEN,cv2.WINDOW_FULLSCREEN )
     cv2.namedWindow(info_window_name,0)
+    cv2.setWindowProperty(info_window_name,cv2.WND_PROP_FULLSCREEN,cv2.WINDOW_FULLSCREEN)
     
     print("Drawing Security Line...")
     image = cv2.line(image,(5,5),(middle_x*2,5),(0,139,0),10,6)
@@ -357,7 +362,8 @@ if __name__ == "__main__":
                 print("pressed 4 , info_flag: ",info_flag)
             else:
                 pass
-
+            
+            info_image = np.zeros((800,800,3),np.uint8)
             #---------------------------------#
             events = sel.select(timeout=None)
             for key, mask in events:
@@ -389,7 +395,11 @@ if __name__ == "__main__":
                             # Show 我們的圖
                             #-----------------------------------------------------------------#
                         ###
-                            # info window
+                        if(info_flag >= 0):
+                            cv2.putText(info_image,"Name: "+str(client_list[info_flag].name), (10, 40), cv2.FONT_HERSHEY_SIMPLEX,1, (0, 255, 255), 1, cv2.LINE_AA)
+                            cv2.putText(info_image,"Number: "+str(client_list[info_flag].fire_num), (10, 60), cv2.FONT_HERSHEY_SIMPLEX,1, (0, 255, 255), 1, cv2.LINE_AA)
+                            cv2.putText(info_image,"Time Pass: "+str(client_list[info_flag].time_pass), (10, 80), cv2.FONT_HERSHEY_SIMPLEX,1, (0, 255, 255), 1, cv2.LINE_AA)
+                        cv2.imshow(info_window_name,info_image)                        
                         ###
  
                         if cv2.waitKey(1) & 0xFF == ord('q'):
