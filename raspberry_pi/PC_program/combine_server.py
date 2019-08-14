@@ -8,11 +8,16 @@ import time
 import keyboard
 import os
 
-##### use "ifconfig" to find your ip
+##### socket connection: use "ifconfig" to find your ip
 host = '192.168.68.100'
-port = 8888
+#host = '192.168.208.108'
+port = 6667
 
-window_name = 'Firefighter' # image_window_name
+##### windows defined
+img_window_name = 'Firefighter' # image_window_name
+map_window_name = 'Map'
+info_window_name = 'Info'
+
 ##### Default four element array
 client_list = [client(),client(),client(),client()]
 resize_height = 480+200
@@ -146,7 +151,7 @@ def service_connection(key, mask):
                                     i.fire_num = recv_data_msg[4:len(recv_data_msg)]
                                     #print(i.fire_num)
                                 else:
-                                    #print(recv_data_msg)
+                                    print(recv_data_msg)
                                     drawNewSpot(recv_data_msg,i.id_num,img_fireman)                    
                                 break
                             # Device 傳輸資料時, call 對應function
@@ -321,7 +326,8 @@ def addNewPoint(event,x,y,flags,param):
             inti_flag = -1
 
 def show_info():
-    os.system("sudo python3 show_info.py")    
+    print("ya")
+#    os.system("sudo python3 show_info.py")    
 
 if __name__ == "__main__":
     img_fireman = []
@@ -347,8 +353,8 @@ if __name__ == "__main__":
     image = np.vstack((image,image))
     
     print("Setting Windows...")
-    cv2.namedWindow("Image",0)
-    cv2.setWindowProperty("Image",cv2.WND_PROP_FULLSCREEN,cv2.WINDOW_FULLSCREEN )
+    cv2.namedWindow(map_window_name,0)
+    cv2.setWindowProperty(map_window_name,cv2.WND_PROP_FULLSCREEN,cv2.WINDOW_FULLSCREEN )
     
     print("Drawing Security Line...")
     image = cv2.line(image,(5,5),(middle_x*2,5),(0,139,0),10,6)
@@ -358,16 +364,14 @@ if __name__ == "__main__":
     image = cv2.line(image,(middle_x,5),(middle_x,middle_y*2),(0,139,0),10,6)
     image = cv2.line(image,(middle_x*2,5),(middle_x*2,middle_y*2),(0,139,0),10,6)
 
-    cv2.setMouseCallback("Image",addNewPoint)
+    cv2.setMouseCallback(map_window_name,addNewPoint)
     keep = image.copy()
 
-    #cv2.imshow("Image",image)
-    
     ##### create a figure with subplot 2*5
     subplot_count = [0,1,2,3]
-    cv2.namedWindow(window_name,cv2.WINDOW_NORMAL)
-    cv2.setMouseCallback(window_name, emergency_cancel)
-    cv2.moveWindow(window_name, 20,20)  # Move it to (40,30)
+    cv2.namedWindow(img_window_name,cv2.WINDOW_NORMAL)
+    cv2.setMouseCallback(img_window_name, emergency_cancel)
+    cv2.moveWindow(img_window_name, 20,20)  # Move it to (40,30)
     ##### create a dictionary
     client_dict = {"client":1}
 
@@ -384,8 +388,8 @@ if __name__ == "__main__":
         print("Waiting For Connection...")
         while True:
             #---------------------------------#
-            #if(keyboard.is_pressed('i')):
-            #    show_info()
+            if(keyboard.is_pressed('i')):
+                show_info()
             #---------------------------------#
             events = sel.select(timeout=None)
             for key, mask in events:
@@ -401,14 +405,14 @@ if __name__ == "__main__":
                             img_concate_Verti=np.concatenate((client_list[2].img_read(),client_list[3].img_read()),axis=1)
                             img_toshow = np.concatenate((img_concate_Hori,img_concate_Verti),axis=0)
                             img_toshow = cv2.resize(img_toshow,(resize_weight,resize_height),interpolation=cv2.INTER_CUBIC)
-                            cv2.imshow(window_name,img_toshow)
+                            cv2.imshow(img_window_name,img_toshow)
                             #cv2.waitKey(1)
                         if(refresh_map):
                             #print("refresh map")
                             refresh_map = False
                             #-------------------------------------------------------------#
                             # to show image
-                            cv2.imshow("Image",image)
+                            cv2.imshow(map_window_name,image)
                             '''
                             if cv2.waitKey(1) & 0xFF == ord('q'):
                                 break
