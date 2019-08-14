@@ -16,7 +16,7 @@ import numpy as np
 import multiprocessing as mp
 
 HOST = '192.168.68.100'
-PORT = 8888
+PORT = 6666
 
 # Register
 power_mgmt_1 = 0x6b
@@ -133,8 +133,10 @@ help_wait_time = 0
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.connect((HOST,PORT))
 
-s.send((("Stark").encode()).ljust(16))
-print("Stark")
+s.send((("Ironman").encode()).ljust(16))
+print("Ironman")
+time.sleep(1)
+s.send((("num1").encode()).ljust(16))
 time.sleep(1)
 s.send((("0.0").encode()).ljust(16))
 print("0.0")

@@ -3,7 +3,7 @@ import time
 import random
 
 HOST = '192.168.68.100'
-PORT = 6666
+PORT = 6667
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.connect((HOST,PORT))
@@ -572,8 +572,10 @@ def not_help():
 		time.sleep(0.5)
 		count += 1
 
-s.send((("Tony").encode()).ljust(16))
-print("Tony")
+s.send((("Stark").encode()).ljust(16))
+print("Stark")
+time.sleep(1)
+s.send((("num2").encode()).ljust(16))
 time.sleep(1)
 s.send((("0.0").encode()).ljust(16))
 print("0.0")
