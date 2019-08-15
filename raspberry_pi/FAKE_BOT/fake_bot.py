@@ -1,7 +1,7 @@
 import socket
 import time
 HOST = '192.168.68.100'
-PORT = 6667
+PORT = 6666
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.connect((HOST,PORT))
