@@ -12,7 +12,7 @@ import time
 ##### socket connection: use "ifconfig" to find your ip
 host = '192.168.68.100'
 #host = '192.168.208.108'
-port = 6667
+port = 6666
 
 ##### windows defined
 img_window_name = 'Firefighter' # image_window_name
