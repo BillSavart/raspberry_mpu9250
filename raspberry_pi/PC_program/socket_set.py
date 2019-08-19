@@ -111,12 +111,12 @@ class AppWindow(QDialog):
         QIm = QImage(image.data, image.shape[1], image.shape[0],image.shape[1] *image.shape[2],QImage.Format_RGB888)
         self.ui.label.setPixmap(QPixmap.fromImage(QIm))
 
-#    def mousePressEvent(self,event):
-#        if(event.button() == Qt.LeftButton):
-#            print("Left Mouse, x: ",event.pos().x())
-#            print("Left Mouse, y: ",event.pos().y())
-
     def mousePressEvent(self,event):
+        if(event.button() == Qt.LeftButton):
+            print("Left Mouse, x: ",event.pos().x())
+            print("Left Mouse, y: ",event.pos().y())
+
+    def mouseReleaseEvent(self,event):
         if(event.button() == Qt.LeftButton):
             if(self.image_map_flag):
                 i = 0
