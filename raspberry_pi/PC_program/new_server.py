@@ -11,7 +11,7 @@ import time
 
 ##### socket connection: use "ifconfig" to find your ip
 #host = '127.0.0.1'
-host = '192.168.43.9'
+host = '192.168.68.100'
 port = 6666
 
 ##### windows defined

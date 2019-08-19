@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1822</width>
+    <height>976</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <widget class="QLabel" name="label">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1811</width>
+     <height>901</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="pixmap">
+    <pixmap>../IMAGE/1f.png</pixmap>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btn_image">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>900</y>
+     <width>121</width>
+     <height>61</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Show Image</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btn_map">
+   <property name="geometry">
+    <rect>
+     <x>200</x>
+     <y>900</y>
+     <width>121</width>
+     <height>61</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Show Map</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btn_info">
+   <property name="geometry">
+    <rect>
+     <x>350</x>
+     <y>900</y>
+     <width>121</width>
+     <height>61</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Show Info</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btn_choose">
+   <property name="geometry">
+    <rect>
+     <x>1510</x>
+     <y>900</y>
+     <width>121</width>
+     <height>61</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Choose</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btn_ok">
+   <property name="geometry">
+    <rect>
+     <x>1670</x>
+     <y>900</y>
+     <width>121</width>
+     <height>61</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>OK</string>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
