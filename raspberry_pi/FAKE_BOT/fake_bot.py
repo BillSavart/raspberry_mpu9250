@@ -8,6 +8,8 @@ PORT = 6666
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.connect((HOST,PORT))
 
+st = 1  #sleep time
+
 def move1():
 	print("enter function_1")
 	count = 0
@@ -15,12 +17,12 @@ def move1():
 	print("0.0")
 	s.send((("Right").encode()).ljust(16))
 	loop = 0
-	time.sleep(0.5)
+	time.sleep(st)
 	while loop < 4:
 		while count < 5:
 			s.send((("1.2").encode()).ljust(16))
 			count += 1
-			time.sleep(0.5)
+			time.sleep(st)
 
 			#random help
 			ran = random.randint(1,100)
@@ -32,21 +34,21 @@ def move1():
 		count = 0
 		s.send((("Left").encode()).ljust(16))
 		loop += 1
-		time.sleep(0.5)
+		time.sleep(st)
 	s.send((("Left").encode()).ljust(16))
-	time.sleep(0.5)
+	time.sleep(st)
 
 def move2():
 	print("enter function_2")
 	s.send((("0.0").encode()).ljust(16))
 	loop = 0
 	count = 0
-	time.sleep(0.5)
+	time.sleep(st)
 	while loop < 4:
 		while count < 5:
 			s.send((("1.2").encode()).ljust(16))
 			count += 1
-			time.sleep(0.5)
+			time.sleep(st)
 
 			#random help
 			ran = random.randint(1,100)
@@ -57,19 +59,18 @@ def move2():
 
 		count = 0
 		s.send((("Right").encode()).ljust(16))
-		time.sleep(0.5)
+		time.sleep(st)
 		loop += 1
-	time.sleep(0.5)
 
 def move3():
 	print("enter function_3")
 	s.send((("0.0").encode()).ljust(16))
 	count = 0
-	time.sleep(0.5)
+	time.sleep(st)
 	while count < 5:
 		s.send((("1.4").encode()).ljust(16))
 		count += 1
-		time.sleep(0.5)
+		time.sleep(st)
 		
 		#random help
 		ran = random.randint(1,100)
@@ -80,11 +81,11 @@ def move3():
 		
 	count = 0
 	s.send((("Left").encode()).ljust(16))
-	time.sleep(0.5)
+	time.sleep(st)
 	while count < 9:
 		s.send((("1.5").encode()).ljust(16))
 		count += 1
-		time.sleep(0.5)
+		time.sleep(st)
 
 		#random help
 		ran = random.randint(1,100)
@@ -94,14 +95,14 @@ def move3():
 			not_help()
 
 	s.send((("Left").encode()).ljust(16))
-	time.sleep(0.5)
+	time.sleep(st)
 	s.send((("Left").encode()).ljust(16))
-	time.sleep(0.5)
+	time.sleep(st)
 	count = 0
 	while count < 9:
 		s.send((("1.5").encode()).ljust(16))
 		count += 1
-		time.sleep(0.5)
+		time.sleep(st)
 
 		#random help
 		ran = random.randint(1,100)
@@ -111,12 +112,12 @@ def move3():
 			help_me()
 
 	s.send((("Right").encode()).ljust(16))
-	time.sleep(0.5)
+	time.sleep(st)
 	count = 0
 	while count < 5:
 		s.send((("1.4").encode()).ljust(16))
 		count += 1
-		time.sleep(0.5)
+		time.sleep(st)
 		
 		#random help
 		ran = random.randint(1,100)
@@ -126,23 +127,23 @@ def move3():
 			help_me()
 
 	s.send((("Right").encode()).ljust(16))
-	time.sleep(0.5)
+	time.sleep(st)
 	s.send((("Right").encode()).ljust(16))
-	time.sleep(0.5)
+	time.sleep(st)
 
 def move4():
 	print("enter function_4")
 	s.send((("0.0").encode()).ljust(16))
-	time.sleep(0.5)
+	time.sleep(st)
 	count = 0
 
 	s.send((("Right").encode()).ljust(16))
-	time.sleep(0.5)
+	time.sleep(st)
 
 	while count < 4:
 		s.send((("1.5").encode()).ljust(16))
 		count += 1
-		time.sleep(0.5)
+		time.sleep(st)
 
 		#random help
 		ran = random.randint(1,100)
@@ -153,11 +154,11 @@ def move4():
 
 	count = 0
 	s.send((("Left").encode()).ljust(16))
-	time.sleep(0.5)
+	time.sleep(st)
 	while count < 9:
 		s.send((("1.5").encode()).ljust(16))
 		count += 1
-		time.sleep(0.5)
+		time.sleep(st)
 	
 		#random help
 		ran = random.randint(1,100)
@@ -168,14 +169,14 @@ def move4():
 
 	count = 0
 	s.send((("Right").encode()).ljust(16))
-	time.sleep(0.5)
+	time.sleep(st)
 	s.send((("Right").encode()).ljust(16))
-	time.sleep(0.5)
+	time.sleep(st)
 
 	while count < 9:
 		s.send((("1.5").encode()).ljust(16))
 		count += 1
-		time.sleep(0.5)
+		time.sleep(st)
 
 		#random help
 		ran = random.randint(1,100)
@@ -186,11 +187,11 @@ def move4():
 
 	count = 0
 	s.send((("Right").encode()).ljust(16))
-	time.sleep(0.5)
+	time.sleep(st)
 	while count < 4:
 		s.send((("1.5").encode()).ljust(16))
 		count += 1
-		time.sleep(0.5)
+		time.sleep(st)
 
 		#random help
 		ran = random.randint(1,100)
@@ -200,17 +201,17 @@ def move4():
 			not_help()
 	
 	s.send((("Right").encode()).ljust(16))
-	time.sleep(0.5)
+	time.sleep(st)
 	
 def move5():
 	print("enter function_5")
 	s.send((("0.0").encode()).ljust(16))
-	time.sleep(0.5)
+	time.sleep(st)
 	count = 0
 
 	while count < 5:
 		s.send((("1.4").encode()).ljust(16))
-		time.sleep(0.5)
+		time.sleep(st)
 		count += 1
 
 		#random help
@@ -222,10 +223,10 @@ def move5():
 
 	count = 0
 	s.send((("Right").encode()).ljust(16))
-	time.sleep(0.5)
+	time.sleep(st)
 	while count < 4:
 		s.send((("1.5").encode()).ljust(16))
-		time.sleep(0.5)
+		time.sleep(st)
 		count += 1
 
 		#random help
@@ -236,11 +237,11 @@ def move5():
 			help_me()
 
 	s.send((("Left").encode()).ljust(16))
-	time.sleep(0.5)
+	time.sleep(st)
 	count = 0
 	while count < 4:
 		s.send((("1.5").encode()).ljust(16))
-		time.sleep(0.5)
+		time.sleep(st)
 		count += 1
 
 		#random help
@@ -252,13 +253,13 @@ def move5():
 
 	count = 0
 	s.send((("Right").encode()).ljust(16))
-	time.sleep(0.5)
+	time.sleep(st)
 	s.send((("Right").encode()).ljust(16))
-	time.sleep(0.5)
+	time.sleep(st)
 
 	while count < 4:
 		s.send((("1.5").encode()).ljust(16))
-		time.sleep(0.5)
+		time.sleep(st)
 		count += 1
 		
 		#random help
@@ -269,12 +270,12 @@ def move5():
 			help_me()
 
 	s.send((("Right").encode()).ljust(16))
-	time.sleep(0.5)
+	time.sleep(st)
 	count = 0
 	
 	while count < 4:
 		s.send((("1.5").encode()).ljust(16))
-		time.sleep(0.5)
+		time.sleep(st)
 		count += 1
 
 		#random help
@@ -286,11 +287,11 @@ def move5():
 
 	count = 0
 	s.send((("Left").encode()).ljust(16))
-	time.sleep(0.5)
+	time.sleep(st)
 	
 	while count < 5:
 		s.send((("1.4").encode()).ljust(16))
-		time.sleep(0.5)
+		time.sleep(st)
 		count += 1
 
 		#random help
@@ -301,19 +302,20 @@ def move5():
 			help_me()
 
 	s.send((("Right").encode()).ljust(16))
-	time.sleep(0.5)
+	time.sleep(st)
 	s.send((("Right").encode()).ljust(16))
-	time.sleep(0.5)
+	time.sleep(st)
 
 def move6():
 	print("enter function_6")
 	s.send((("0.0").encode()).ljust(16))
+	time.sleep(st)
 	count = 0
 
 	while count < 5:
 		s.send((("1.4").encode()).ljust(16))
 		count += 1
-		time.sleep(0.5)
+		time.sleep(st)
 
 		#random help
 		ran = random.randint(1,100)
@@ -323,17 +325,17 @@ def move6():
 			help_me()
 
 	s.send((("Left").encode()).ljust(16))
-	time.sleep(0.5)
+	time.sleep(st)
 
 	s.send((("1.5").encode()).ljust(16))
-	time.sleep(0.5)
+	time.sleep(st)
 	s.send((("Left").encode()).ljust(16))
-	time.sleep(0.5)
+	time.sleep(st)
 	count = 0
 	while count < 5:
 		s.send((("1.5").encode()).ljust(16))
 		count += 1
-		time.sleep(0.5)
+		time.sleep(st)
 
 		#random help
 		ran = random.randint(1,100)
@@ -343,14 +345,14 @@ def move6():
 			not_help()
 	
 	s.send((("Right").encode()).ljust(16))
-	time.sleep(0.5)
+	time.sleep(st)
 	s.send((("Right").encode()).ljust(16))
-	time.sleep(0.5)
+	time.sleep(st)
 	count = 0
 	while count < 5:
 		s.send((("1.5").encode()).ljust(16))
 		count += 1
-		time.sleep(0.5)
+		time.sleep(st)
 
 		#random help
 		ran = random.randint(1,100)
@@ -362,17 +364,17 @@ def move6():
 	count = 0
 
 	s.send((("Right").encode()).ljust(16))
-	time.sleep(0.5)
+	time.sleep(st)
 	s.send((("1.5").encode()).ljust(16))
-	time.sleep(0.5)
+	time.sleep(st)
 	s.send((("Right").encode()).ljust(16))
-	time.sleep(0.5)
+	time.sleep(st)
 
 	count = 0
 	while count < 5:
 		s.send((("1.4").encode()).ljust(16))
 		count += 1
-		time.sleep(0.5)
+		time.sleep(st)
 		
 		#random help
 		ran = random.randint(1,100)
@@ -382,19 +384,20 @@ def move6():
 			not_help()
 
 	s.send((("Right").encode()).ljust(16))
-	time.sleep(0.5)
+	time.sleep(st)
 	s.send((("Right").encode()).ljust(16))
-	time.sleep(0.5)
+	time.sleep(st)
 
 def move7():
 	print("enter function_7")
 	s.send((("0.0").encode()).ljust(16))
+	time.sleep(st)
 	count = 0
 	
 	while count < 5:
 		s.send((("1.4").encode()).ljust(16))
 		count += 1
-		time.sleep(0.5)
+		time.sleep(st)
 
 		#random help
 		ran = random.randint(1,100)
@@ -404,11 +407,11 @@ def move7():
 			help_me()
 
 	s.send((("Left").encode()).ljust(16))
-	time.sleep(0.5)
+	time.sleep(st)
 	count = 0
 	while count < 6:
 		s.send((("1.5").encode()).ljust(16))
-		time.sleep(0.5)
+		time.sleep(st)
 		count += 1
 
 		#random help
@@ -419,18 +422,18 @@ def move7():
 			not_help()
 	
 	s.send((("Left").encode()).ljust(16))
-	time.sleep(0.5)
+	time.sleep(st)
 	count = 0
 	loop = 0
 	s.send((("1.5").encode()).ljust(16))
-	time.sleep(0.5)
+	time.sleep(st)
 	s.send((("1.5").encode()).ljust(16))
-	time.sleep(0.5)
+	time.sleep(st)
 	while loop < 4:
 		while count < 4:
 			s.send((("1.5").encode()).ljust(16))
 			count += 1
-			time.sleep(0.5)
+			time.sleep(st)
 
 			#random help
 			ran = random.randint(1,100)
@@ -440,26 +443,26 @@ def move7():
 				help_me()
 
 		s.send((("Right").encode()).ljust(16))
-		time.sleep(0.5)
+		time.sleep(st)
 		count = 0
 		loop += 1
 	
 	s.send((("Left").encode()).ljust(16))
-	time.sleep(0.5)
+	time.sleep(st)
 	s.send((("Left").encode()).ljust(16))
-	time.sleep(0.5)
+	time.sleep(st)
 	s.send((("1.5").encode()).ljust(16))
-	time.sleep(0.5)
+	time.sleep(st)
 	s.send((("1.5").encode()).ljust(16))
-	time.sleep(0.5)
+	time.sleep(st)
 	s.send((("Right").encode()).ljust(16))
-	time.sleep(0.5)
+	time.sleep(st)
 	
 	count = 0
 	while count < 6:
 		s.send((("1.5").encode()).ljust(16))
 		count += 1
-		time.sleep(0.5)
+		time.sleep(st)
 
 		#random help
 		ran = random.randint(1,100)
@@ -470,11 +473,11 @@ def move7():
 
 	count = 0
 	s.send((("Right").encode()).ljust(16))
-	time.sleep(0.5)
+	time.sleep(st)
 	while count < 5:
 		s.send((("1.4").encode()).ljust(16))
 		count += 1
-		time.sleep(0.5)
+		time.sleep(st)
 
 		#random help
 		ran = random.randint(1,100)
@@ -484,92 +487,64 @@ def move7():
 			help_me()
 
 	s.send((("Right").encode()).ljust(16))
-	time.sleep(0.5)
+	time.sleep(st)
 	s.send((("Right").encode()).ljust(16))
-	time.sleep(0.5)
+	time.sleep(st)
 
 def help_me():
 	count = 0
 	print("enter help_condition")
 
-	ra = random.randint(1,8)
-	
-	if ra == 1:
-		temp = 3
-
-	elif ra == 2:
-		temp = 4
-
-	elif ra == 3:
-		temp = 5
-
-	elif ra == 4:
-		temp = 6
-
-	elif ra == 5:
-		temp = 7
-
-	elif ra == 6:
-		temp = 8
-
-	elif ra == 7:
-		temp = 9
-
-	else:
-		temp = 10
-
-	while count < 10:
+	while count < 5:
 		s.send((("HELP").encode()).ljust(16))
-		time.sleep(0.5)
+		time.sleep(st)
 		count += 1
 	count = 0
 
 	ra = random.randint(1,4)
 	if ra == 1:
-		temp = 6
+		temp = 3
 
 	elif ra == 2:
-		temp = 10
+		temp = 5
 
 	elif ra == 3:
-		temp = 14
+		temp = 7
 
 	else:
-		temp = 20
+		temp = 10
 
 	while count < temp:
 		s.send((("HELP2").encode()).ljust(16))
-		time.sleep(0.5)
+		time.sleep(st)
 		count += 1
 
 def not_help():
 	count = 0
 	print("enter not_really_need_help")
 
-	rand = random.randint(1,9)
+	rand = random.randint(1,8)
 
 	if rand == 1:
 		tmp = 2
 	elif rand == 2:
-		tmp = 3
+		tmp = 2
 	elif rand == 3:
-		tmp = 4
+		tmp = 3
 	elif rand == 4:
-		tmp = 5
+		tmp = 3
 	elif rand == 5:
-		tmp = 6
+		tmp = 3
 	elif rand == 6:
-		tmp = 7
+		tmp = 4
 	elif rand == 7:
-		tmp = 8
-	elif rand == 8:
-		tmp = 9
+		tmp = 4
 	else:
-		tmp = 10
+		tmp = 4
 
 	while count < tmp:
 		s.send((("HELP").encode()).ljust(16))
-		time.sleep(0.5)
+		time.sleep(st)
 		count += 1
 
 s.send((("Stark").encode()).ljust(16))
