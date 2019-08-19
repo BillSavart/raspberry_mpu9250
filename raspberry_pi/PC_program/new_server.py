@@ -10,9 +10,9 @@ import os
 import time
 
 ##### socket connection: use "ifconfig" to find your ip
-host = '192.168.68.100'
-#host = '192.168.208.108'
-port = 6667
+#host = '127.0.0.1'
+host = '192.168.43.9'
+port = 6666
 
 ##### windows defined
 img_window_name = 'Firefighter' # image_window_name
@@ -127,7 +127,7 @@ def service_connection(key, mask):
             ##### Default : white background black font
             set_namespace_color(client_host,(255,255,255),(0, 0, 0))   
             print("The Name is: ",name)
-            
+            init_time = time.time() 
         else:
             if(client_list[client_host].package_size() < 0):
                 try:
@@ -152,7 +152,7 @@ def service_connection(key, mask):
                                     #print("HELP")
                                     helpConditionExec("HELP",i.id_num)
                                 elif("num" in recv_data_msg):
-                                    i.fire_num = recv_data_msg[4:len(recv_data_msg)]
+                                    i.fire_num = recv_data_msg[3:len(recv_data_msg)]
                                     #print(i.fire_num)
                                 else:
                                     print("id: ",i.id_num)
@@ -396,9 +396,11 @@ if __name__ == "__main__":
                             #-----------------------------------------------------------------#
                         ###
                         if(info_flag >= 0):
+                            time_str = str(client_list[info_flag].time_pass)
+                            time_str = time_str.partition('.')[0]+"."+time_str.partition('.')[2][0:1]
                             cv2.putText(info_image,"Name: "+str(client_list[info_flag].name), (10, 40), cv2.FONT_HERSHEY_SIMPLEX,1, (0, 255, 255), 1, cv2.LINE_AA)
-                            cv2.putText(info_image,"Number: "+str(client_list[info_flag].fire_num), (10, 60), cv2.FONT_HERSHEY_SIMPLEX,1, (0, 255, 255), 1, cv2.LINE_AA)
-                            cv2.putText(info_image,"Time Pass: "+str(client_list[info_flag].time_pass), (10, 80), cv2.FONT_HERSHEY_SIMPLEX,1, (0, 255, 255), 1, cv2.LINE_AA)
+                            cv2.putText(info_image,"Number: "+str(client_list[info_flag].fire_num), (10, 80), cv2.FONT_HERSHEY_SIMPLEX,1, (0, 255, 255), 1, cv2.LINE_AA)
+                            cv2.putText(info_image,' '.join(["Time Pass:",time_str,"secs"]), (10, 120), cv2.FONT_HERSHEY_SIMPLEX,1, (0, 255, 255), 1, cv2.LINE_AA)
                         cv2.imshow(info_window_name,info_image)                        
                         ###
  
