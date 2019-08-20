@@ -18,8 +18,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1811</width>
-     <height>901</height>
+     <width>1821</width>
+     <height>921</height>
     </rect>
    </property>
    <property name="text">
@@ -33,7 +33,7 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>900</y>
+     <y>920</y>
      <width>121</width>
      <height>61</height>
     </rect>
@@ -45,8 +45,8 @@
   <widget class="QPushButton" name="btn_map">
    <property name="geometry">
     <rect>
-     <x>200</x>
-     <y>900</y>
+     <x>190</x>
+     <y>920</y>
      <width>121</width>
      <height>61</height>
     </rect>
@@ -59,7 +59,7 @@
    <property name="geometry">
     <rect>
      <x>350</x>
-     <y>900</y>
+     <y>920</y>
      <width>121</width>
      <height>61</height>
     </rect>
@@ -71,8 +71,8 @@
   <widget class="QPushButton" name="btn_choose">
    <property name="geometry">
     <rect>
-     <x>1510</x>
-     <y>900</y>
+     <x>1460</x>
+     <y>920</y>
      <width>121</width>
      <height>61</height>
     </rect>
@@ -84,8 +84,8 @@
   <widget class="QPushButton" name="btn_ok">
    <property name="geometry">
     <rect>
-     <x>1670</x>
-     <y>900</y>
+     <x>1620</x>
+     <y>920</y>
      <width>121</width>
      <height>61</height>
     </rect>
