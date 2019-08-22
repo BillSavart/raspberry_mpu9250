@@ -33,12 +33,12 @@ class AppWindow(QDialog):
         self.ui.btn_ok.clicked.connect(self.on_click_btn_ok)
         self.ui.btn_remove.clicked.connect(self.on_click_btn_remove)
         self.ui.btn_reset.clicked.connect(self.on_click_btn_reset)
-        self.ui.btn_choose.setEnabled(False)
-        self.ui.btn_remove.setEnabled(False)
-        self.ui.btn_ok.setEnabled(False)
-        self.ui.btn_choose.setVisible(False)
-        self.ui.btn_remove.setVisible(False)
-        self.ui.btn_ok.setVisible(False)
+        self.ui.btn_choose.setEnabled(True)
+        self.ui.btn_remove.setEnabled(True)
+        self.ui.btn_ok.setEnabled(True)
+        self.ui.btn_choose.setVisible(True)
+        self.ui.btn_remove.setVisible(True)
+        self.ui.btn_ok.setVisible(True)
         self.ui.btn_reset.setEnabled(False)
         self.ui.btn_reset.setVisible(False)
 
@@ -48,7 +48,7 @@ class AppWindow(QDialog):
 
         self.img_map_loading()
         self.socket_initialize()
-        #self.showMaximized()
+        self.showMaximized()
         self.show()
 
     def initVar(self):
@@ -76,6 +76,7 @@ class AppWindow(QDialog):
         self.keep_fire = []
         #self.host = '172.20.10.2'
         self.host = '192.168.43.9'
+        #self.host = '127.0.0.1'
         self.port = 8888
         self.time_press = 0
         self.info_flag = 0
