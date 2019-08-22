@@ -1,6 +1,7 @@
 import numpy as np
 import cv2
 import struct
+import time
 
 height = 480
 weight = 640
@@ -12,12 +13,19 @@ img_white[:,:] = (255,255,255)
 img_white_namespace = np.zeros((name_space_height,weight,3), np.uint8)
 img_white_namespace[:,:] = (255,255,255)
 
+bound_w = 1174 
+bound_h = 705 
+right_x = 25 + bound_w
+bottom_y = 25 + bound_h
+line_W = 10
+
 matrix = np.loadtxt("matrix6.txt", delimiter=',')
 M = cv2.getRotationMatrix2D((weight/2,height/2), 180, 1)
 
 class client:
     th_70 = 0   ###### threshold for 70 degree flir value
     th_100 = 0  ###### threshold for 100 degree flir value
+    t= 0
     remain_package_size = 0
     img_binary = b''
     img_ir = img_white
@@ -32,14 +40,24 @@ class client:
     twinkling_flag = False
     closing_danger_flag = False     ###### close to the danger area
     in_danger_flag = False      ###### the red area more than one third of pic
+    in_explosion_flag = False
+    set_start = False
+    fireman_bound_top = 0
+    fireman_bound_bottom = 0
+    fireman_bound_left = 0
+    fireman_bound_right = 0
+    explosion_bound_top = 0
+    explosion_bound_bottom = 0
+    explosion_bound_left = 0
+    explosion_bound_right = 0
 # ---------------------------------------------#
     color_set = (0,0,0) # 紅綠燈的燈號
     fire_num = ""
     fire_name = ""
+    time_in = 0
     time_pass = 0
     id_num = 0 # 顯示在Map的數字
     ip_addr = "" # 裝置ip
-    ip_addr_num = 0
     position_x = 25 # 裝置在Map的位置(x)
     position_y = 25 # 裝置在Map的位置(y)
     direction = -1 # 裝置方向
@@ -47,10 +65,67 @@ class client:
     bes_data_list = []
     gyro_list = []
 #------------------------------------------------#
-    def __init__(self):
+    def __init__(self, num):
         self.visible_flag = True
         self.first_flag = True
         self.namespace_img = img_white_namespace
+        if(num == 0):
+            self.explosion_bound_top = line_W
+            self.explosion_bound_bottom = bound_h - line_W
+            self.explosion_bound_left = line_W
+            self.explosion_bound_right = bound_w - line_W
+            
+            self.fireman_bound_top = 25 
+            self.fireman_bound_bottom = bound_h-30
+            self.fireman_bound_left = 25
+            self.fireman_bound_right = bound_w-25
+            
+        elif(num == 1):
+            self.explosion_bound_top = line_W
+            self.explosion_bound_bottom = bound_h - line_W
+            self.explosion_bound_left = bound_w 
+            self.explosion_bound_right = bound_w * 2 - int(line_W * 1.5)
+            
+            self.fireman_bound_top = 25
+            self.fireman_bound_bottom = bound_h-30
+            self.fireman_bound_left = bound_w+25
+            self.fireman_bound_right = bound_w * 2 -25
+
+            self.position_x = right_x
+            
+        elif(num == 2):
+            self.explosion_bound_top = bound_h
+            self.explosion_bound_bottom = bound_h * 2 - int(line_W * 1.5)
+            self.explosion_bound_left = line_W
+            self.explosion_bound_right = bound_w - line_W
+
+            self.fireman_bound_top = bound_h + 25
+            self.fireman_bound_bottom = bound_h * 2 -25
+            self.fireman_bound_left = 25
+            self.fireman_bound_right = bound_w-25
+
+            self.position_y = bottom_y
+            
+        elif(num == 3):
+            self.explosion_bound_top = bound_h
+            self.explosion_bound_bottom = bound_h * 2 - int(line_W * 1.5)
+            self.explosion_bound_left = bound_w
+            self.explosion_bound_right = bound_w *2 - int(line_W * 1.5)
+
+            self.fireman_bound_top = bound_h + 25
+            self.fireman_bound_bottom = bound_h * 2 -25
+            self.fireman_bound_left = bound_w + 25
+            self.fireman_bound_right = bound_w * 2 -25
+
+            self.position_x = right_x
+            self.position_y = bottom_y
+            
+
+    def except_for_img(self):
+        img_binary = b''
+        self.remain_package_size = 0
+        self.recv_ir_flag = False
+        self.recv_flir_flag = False
 
     def set_info(self, num, ip_position):
         self.id_num = num
@@ -64,9 +139,6 @@ class client:
         else:
             ###### set the 100 degree threshold of flir value ######
             self.th_100 = num
-
-    def set_close_danger(self, flag):
-        self.closing_danger_flag = flag
 
     def set_namespace(self, my_namespace_img):
         ###### set the image with name ######
@@ -143,24 +215,27 @@ class client:
                 data = struct.unpack("4800I", self.img_binary)
                 self.img_binary = b''
                 data = (np.asarray(data)).astype(np.float32)
+                if(np.sum((data> self.th_100)) >= (data.size / 3)):
+                    ###### if the red area more one third of pic, rise the in_danger_flag ######
+                    self.in_danger_flag = True
                 data = np.reshape(data, (60,80,1))
                 ###### if over threshold, replace part of ir image with red or green color ######
                 dst = cv2.resize(data, (weight,height), interpolation= cv2.INTER_CUBIC)
                 dst = np.dstack([dst]*3)
                 tmp = self.img_ir.copy()
                 dst = cv2.warpPerspective(dst,matrix, (weight,height))
+
                 np.place(tmp, (dst > self.th_100), (0,0,255))
                 np.place(tmp, ((dst > self.th_70)&(dst <= self.th_100)), (163,255,197))
                 before_rotate_img = cv2.addWeighted(self.img_ir, 0.5, tmp, 0.5, 0)
+                
                 ###### rotate image ######
                 rotate_img = cv2.warpAffine(before_rotate_img, M, (weight,height))
                 self.img_combine = rotate_img
                 ###### put the warning message on pic ######
-                if(np.sum((data> self.th_100)) >= (data.size / 3)):
-                    print("sum= ",np.sum((data> self.th_100)),"size= ",data.size)
-                    ###### if the red area more one third of pic, rise the in_danger_flag ######
-                    self.in_danger_flag = True
+                if(self.in_danger_flag | self.in_explosion_flag):
                     cv2.putText(self.img_combine, "In danger area !", (20,40), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,255), 3)
+                    self.in_explosion_flag = False
                 elif(self.closing_danger_flag):
                     cv2.putText(self.img_combine, "Close to danger area", (20,40), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,255), 3)
                     self.closing_danger_flag = False
