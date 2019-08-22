@@ -18,15 +18,15 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1821</width>
-     <height>921</height>
+     <width>1811</width>
+     <height>901</height>
     </rect>
    </property>
    <property name="text">
     <string/>
    </property>
    <property name="pixmap">
-    <pixmap>../IMAGE/1f.png</pixmap>
+    <pixmap>Project/raspberry_mpu9250/raspberry_pi/IMAGE/1f.png</pixmap>
    </property>
   </widget>
   <widget class="QPushButton" name="btn_image">
@@ -71,10 +71,10 @@
   <widget class="QPushButton" name="btn_choose">
    <property name="geometry">
     <rect>
-     <x>1460</x>
-     <y>920</y>
-     <width>121</width>
-     <height>61</height>
+     <x>1400</x>
+     <y>930</y>
+     <width>85</width>
+     <height>51</height>
     </rect>
    </property>
    <property name="text">
@@ -85,13 +85,39 @@
    <property name="geometry">
     <rect>
      <x>1620</x>
-     <y>920</y>
-     <width>121</width>
-     <height>61</height>
+     <y>930</y>
+     <width>85</width>
+     <height>51</height>
     </rect>
    </property>
    <property name="text">
     <string>OK</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btn_remove">
+   <property name="geometry">
+    <rect>
+     <x>1510</x>
+     <y>930</y>
+     <width>85</width>
+     <height>51</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Remove</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btn_reset">
+   <property name="geometry">
+    <rect>
+     <x>1510</x>
+     <y>930</y>
+     <width>85</width>
+     <height>51</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Reset Time</string>
    </property>
   </widget>
  </widget>
